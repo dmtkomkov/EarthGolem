@@ -1,4 +1,4 @@
-namespace LangWebApp;
+namespace api;
 
 public class WeatherForecast
 {
