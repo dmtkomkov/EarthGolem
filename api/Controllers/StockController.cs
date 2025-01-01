@@ -69,6 +69,6 @@ public class StockController : ControllerBase {
 
         _context.SaveChanges();
 
-        return Ok();
+        return NoContent();
     }
 }
