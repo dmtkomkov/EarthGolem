@@ -3,8 +3,8 @@ using api.Models;
 
 namespace api.Mappers;
 
-public static class StockMappers {
-    public static StockDto ToStockDto(this Stock stockModel) {
+public static class StockMapper {
+    public static StockDto ToDto(this Stock stockModel) {
         return new StockDto() {
             Id = stockModel.Id,
             Symbol = stockModel.Symbol,
@@ -13,20 +13,21 @@ public static class StockMappers {
             LastDiv = stockModel.LastDiv,
             Industry = stockModel.Industry,
             MarketCap = stockModel.MarketCap,
+            Comments = stockModel.Comments.Select(c => c.ToDto()).ToList(),
         };
     }
     
-    public static void UpdateFromDto(this Stock stock, UpdateStockDto dto)
+    public static void UpdateModelFromDto(this Stock model, UpdateStockDto dto)
     {
-        stock.Symbol = dto.Symbol;
-        stock.CompanyName = dto.CompanyName;
-        stock.Purchase = dto.Purchase;
-        stock.LastDiv = dto.LastDiv;
-        stock.Industry = dto.Industry;
-        stock.MarketCap = dto.MarketCap;
+        model.Symbol = dto.Symbol;
+        model.CompanyName = dto.CompanyName;
+        model.Purchase = dto.Purchase;
+        model.LastDiv = dto.LastDiv;
+        model.Industry = dto.Industry;
+        model.MarketCap = dto.MarketCap;
     }
 
-    public static Stock ToStock(this CreateStockDto stockDto) {
+    public static Stock ToModel(this CreateStockDto stockDto) {
         return new Stock() {
             Symbol = stockDto.Symbol,
             CompanyName = stockDto.CompanyName,
