@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace TimeTracker.Migrations
+namespace TimeTracker.Data.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration
