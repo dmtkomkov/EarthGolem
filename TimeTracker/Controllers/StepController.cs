@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TimeTracker.Dtos;
 using TimeTracker.Interfaces;
 using TimeTracker.Mappers;
@@ -7,6 +8,7 @@ namespace TimeTracker.Controllers;
 
 [ApiController]
 [Route("api/step")]
+[Authorize]
 public class StepController(IStepRepository stepRepo) : ControllerBase
 {
     [HttpGet]

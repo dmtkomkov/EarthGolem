@@ -11,7 +11,7 @@ using TimeTracker.Data;
 namespace TimeTracker.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250114200554_Init")]
+    [Migration("20250115171606_Init")]
     partial class Init
     {
         /// <inheritdoc />
