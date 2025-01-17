@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -42,8 +43,8 @@ public class AuthController(
         if (!signInResult.Succeeded)
             return Unauthorized("Invalid username or password.");
 
-        var jwtToken = GenerateJwtToken();
-        var refreshTokenValue = GenerateRefreshToken();
+        var jwtToken = GenerateJwtToken(user);
+        var refreshTokenValue = GenerateRefreshToken(user);
         
         var setResult = await userManager.SetAuthenticationTokenAsync(
             user,
@@ -87,8 +88,8 @@ public class AuthController(
     //         return Unauthorized("Invalid refresh token.");
     //     }
     //
-    //     var newJwtToken = GenerateJwtToken();
-    //     var newRefreshTokenValue = GenerateRefreshToken();
+    //     var newJwtToken = GenerateJwtToken(user);
+    //     var newRefreshTokenValue = GenerateRefreshToken(user);
     //
     //     var setResult = await userManager.SetAuthenticationTokenAsync(
     //         user,
@@ -109,28 +110,36 @@ public class AuthController(
     //     });
     // }
 
-    private string GenerateJwtToken()
+    private string GenerateJwtToken(IdentityUser user)
     {
         var signingCredentials = new SigningCredentials(_securityKey, SecurityAlgorithms.HmacSha256);
-
         var expireMinutes = Convert.ToDouble(configuration["Jwt:ExpireMinutes"]);
-        var expires = DateTime.UtcNow.AddMinutes(expireMinutes);
-
+        var claims = new List<Claim> {
+            new (JwtRegisteredClaimNames.Sub, user.Id)
+        };
+        
         var token = new JwtSecurityToken(
-            expires: expires,
+            claims: claims,
+            notBefore: DateTime.UtcNow,
+            expires: DateTime.UtcNow.AddMinutes(expireMinutes),
             signingCredentials: signingCredentials
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    private string GenerateRefreshToken()
+    private string GenerateRefreshToken(IdentityUser user)
     {
         var signingCredentials = new SigningCredentials(_securityKey, SecurityAlgorithms.HmacSha256);
+        var expireDays = Convert.ToDouble(configuration["Jwt:expireDays"]);
+        var claims = new List<Claim> {
+            new (JwtRegisteredClaimNames.Sub, user.Id)
+        };
 
         var token = new JwtSecurityToken(
+            claims: claims,
             notBefore: DateTime.UtcNow,
-            expires: DateTime.UtcNow.AddDays(7),
+            expires: DateTime.UtcNow.AddDays(expireDays),
             signingCredentials: signingCredentials
         );
 
