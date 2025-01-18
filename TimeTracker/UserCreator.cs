@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace TimeTracker;
 
-public class UserCreator {
+public static class UserCreator {
     public static async Task CreateUserAsync(IServiceProvider services, string[] args)
     {
         using var scope = services.CreateScope();

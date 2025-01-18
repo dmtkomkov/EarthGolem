@@ -12,7 +12,8 @@ namespace TimeTracker.Controllers;
 public class AuthController(
         UserManager<IdentityUser> userManager,
         SignInManager<IdentityUser> signInManager,
-        IConfiguration configuration
+        IConfiguration configuration,
+        ILogger<AuthController> logger
     ) : ControllerBase
 {
     private const string RefreshTokenName = "RefreshToken";
@@ -168,19 +169,19 @@ public class AuthController(
 
             return true;
         } catch (SecurityTokenExpiredException) {
-            Console.WriteLine("The token has expired.");
+            logger.LogError("The token has expired");
             return false;
         } catch (SecurityTokenInvalidSignatureException) {
-            Console.WriteLine("The token signature is invalid.");
+            logger.LogError("The token signature is invalid");
             return false;
         } catch (SecurityTokenException) {
-            Console.WriteLine("There was an error with the token.");
+            logger.LogError("There was an error with the token");
             return false;
         } catch (ArgumentException) {
-            Console.WriteLine("The token format is invalid.");
+            logger.LogError("The token format is invalid");
             return false;
         } catch (Exception ex) {
-            Console.WriteLine($"An unknown error occurred: {ex.Message}");
+            logger.LogError("An unknown error occurred: {ExMessage}", ex.Message);
             return false;
         }
     }
