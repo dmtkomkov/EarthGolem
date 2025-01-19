@@ -5,7 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using TimeTracker;
 using TimeTracker.Data;
 using TimeTracker.Interfaces;
-using TimeTracker.Repositories;
+using TimeTracker.Services;
+using TimeTracker.Services.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +71,7 @@ builder.Services.AddAuthentication(options => {
     });
 
 builder.Services.AddScoped<IStepRepository, StepRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 

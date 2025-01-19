@@ -5,7 +5,7 @@ using TimeTracker.Interfaces;
 using TimeTracker.Mappers;
 using TimeTracker.Models;
 
-namespace TimeTracker.Repositories;
+namespace TimeTracker.Services.Repositories;
 
 public class StepRepository(ApplicationDbContext context) : IStepRepository
 {

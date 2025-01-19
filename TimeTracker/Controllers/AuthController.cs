@@ -1,9 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using TimeTracker.Interfaces;
 
 namespace TimeTracker.Controllers;
 
@@ -12,13 +10,11 @@ namespace TimeTracker.Controllers;
 public class AuthController(
         UserManager<IdentityUser> userManager,
         SignInManager<IdentityUser> signInManager,
-        IConfiguration configuration,
-        ILogger<AuthController> logger
+        ITokenService tokenService
     ) : ControllerBase
 {
     private const string RefreshTokenName = "RefreshToken";
     private const string LoginProvider = "TimeTrackerProvider";
-    private readonly SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
     
     public class LoginDto
     {
@@ -26,7 +22,7 @@ public class AuthController(
         public string Password { get; set; } = string.Empty;
     }
 
-    public class RefreshTokenDto
+    public class TokensDto
     {
         public string Token { get; set; } = string.Empty;
         public string RefreshToken { get; set; } = string.Empty;
@@ -43,35 +39,19 @@ public class AuthController(
         if (!signInResult.Succeeded)
             return Unauthorized("Invalid username or password.");
 
-        var jwtToken = GenerateJwtToken(user);
-        var refreshTokenValue = GenerateRefreshToken(user);
-        
-        var setResult = await userManager.SetAuthenticationTokenAsync(
-            user,
-            LoginProvider,
-            RefreshTokenName,
-            refreshTokenValue
-        );
-
-        if (!setResult.Succeeded)
-        {
-            return StatusCode(500, "Error saving refresh token.");
-        }
-
-        return Ok(new
-        {
-            Token = jwtToken,
-            RefreshToken = refreshTokenValue
-        });
+        return await GenerateTokens(user);
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshTokenDto refreshRequest)
+    public async Task<IActionResult> Refresh([FromBody] TokensDto refreshRequest)
     {
-        if (!ValidateRefreshToken(refreshRequest.RefreshToken, out var jwtToken) || jwtToken == null)
+        if (!tokenService.ValidateRefreshToken(refreshRequest.Token, false, out var token) || token == null)
+            return Unauthorized("Invalid token.");
+        
+        if (!tokenService.ValidateRefreshToken(refreshRequest.RefreshToken, true, out var refreshToken) || refreshToken == null)
             return Unauthorized("Invalid refresh token.");
     
-        var userId = jwtToken.Claims
+        var userId = refreshToken.Claims
             .FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
         
         if (string.IsNullOrEmpty(userId))
@@ -92,15 +72,21 @@ public class AuthController(
         {
             return Unauthorized("Invalid refresh token.");
         }
-    
-        var newJwtToken = GenerateJwtToken(user);
-        var newRefreshTokenValue = GenerateRefreshToken(user);
+
+        return await GenerateTokens(user);
+    }
+
+    private async Task<IActionResult> GenerateTokens(IdentityUser user) {
+        // var expireMinutes = Convert.ToDouble(configuration["Jwt:ExpireMinutes"]);
+        
+        var newToken = tokenService.GenerateJwtToken(user.Id, DateTime.UtcNow.AddMinutes(1));
+        var newRefreshToken = tokenService.GenerateJwtToken(user.Id, DateTime.UtcNow.AddMinutes(5));
     
         var setResult = await userManager.SetAuthenticationTokenAsync(
             user,
             LoginProvider,
             RefreshTokenName,
-            newRefreshTokenValue
+            newRefreshToken
         );
     
         if (!setResult.Succeeded)
@@ -110,79 +96,8 @@ public class AuthController(
     
         return Ok(new
         {
-            Token = newJwtToken,
-            RefreshToken = newRefreshTokenValue
+            Token = newToken,
+            RefreshToken = newRefreshToken
         });
-    }
-
-    private string GenerateJwtToken(IdentityUser user)
-    {
-        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var expireMinutes = Convert.ToDouble(configuration["Jwt:ExpireMinutes"]);
-        var claims = new List<Claim> {
-            new (JwtRegisteredClaimNames.Sub, user.Id)
-        };
-        
-        var token = new JwtSecurityToken(
-            claims: claims,
-            notBefore: DateTime.UtcNow,
-            expires: DateTime.UtcNow.AddMinutes(expireMinutes),
-            signingCredentials: signingCredentials
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
-    private string GenerateRefreshToken(IdentityUser user)
-    {
-        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var expireDays = Convert.ToDouble(configuration["Jwt:expireDays"]);
-        var claims = new List<Claim> {
-            new (JwtRegisteredClaimNames.Sub, user.Id)
-        };
-
-        var token = new JwtSecurityToken(
-            claims: claims,
-            notBefore: DateTime.UtcNow,
-            expires: DateTime.UtcNow.AddMinutes(5),
-            signingCredentials: signingCredentials
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
-    private bool ValidateRefreshToken(string token, out JwtSecurityToken? jwtToken) {
-        jwtToken = null;
-        var tokenHandler = new JwtSecurityTokenHandler();
-
-        try {
-            tokenHandler.ValidateToken(token, new TokenValidationParameters {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = securityKey,
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
-            }, out var validatedToken);
-
-            jwtToken = validatedToken as JwtSecurityToken;
-
-            return true;
-        } catch (SecurityTokenExpiredException) {
-            logger.LogError("The token has expired");
-            return false;
-        } catch (SecurityTokenInvalidSignatureException) {
-            logger.LogError("The token signature is invalid");
-            return false;
-        } catch (SecurityTokenException) {
-            logger.LogError("There was an error with the token");
-            return false;
-        } catch (ArgumentException) {
-            logger.LogError("The token format is invalid");
-            return false;
-        } catch (Exception ex) {
-            logger.LogError("An unknown error occurred: {ExMessage}", ex.Message);
-            return false;
-        }
     }
 }
