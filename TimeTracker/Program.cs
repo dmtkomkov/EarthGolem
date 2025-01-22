@@ -73,6 +73,8 @@ builder.Services.AddAuthentication(options => {
 builder.Services.AddScoped<IStepRepository, StepRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+builder.Configuration.AddEnvironmentVariables();
+
 var app = builder.Build();
 
 //===================================================================================================================//
@@ -88,8 +90,14 @@ if (args.Length > 0 && args[0] == "create-user")
 if (app.Environment.IsDevelopment())
 {
     app.UseOpenApi();
-    app.UseSwaggerUi();
 }
+else if (app.Environment.IsProduction()) {
+    app.UseOpenApi(configure =>
+        configure.PostProcess = (document, _) => document.Schemes = new[] { NSwag.OpenApiSchema.Https }
+    );
+}
+
+app.UseSwaggerUi();
 
 app.UseRouting();
 
