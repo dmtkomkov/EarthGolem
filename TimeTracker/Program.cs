@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 const string bearer = "Bearer";
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
+var corsSettings = builder.Configuration.GetSection("CorsSettings");
 var tokenValidationParameters = new TokenValidationParameters {
     ValidateIssuer = false,
     ValidateAudience = false,
@@ -40,6 +41,13 @@ builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 builder.Services.AddControllers().AddNewtonsoftJson(options => {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("StoneGolemLocal", policy => {
+        policy.WithOrigins(corsSettings["AllowedOrigins"]!).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+    });
 });
 
 builder.Services.AddOpenApiDocument(config =>
@@ -86,6 +94,8 @@ if (args.Length > 0 && args[0] == "create-user")
 }
 
 //===================================================================================================================//
+
+app.UseCors("StoneGolemLocal");
 
 if (app.Environment.IsDevelopment())
 {
