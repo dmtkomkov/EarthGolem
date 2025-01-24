@@ -46,7 +46,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options => {
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("StoneGolemLocal", policy => {
-        policy.WithOrigins(corsSettings["AllowedOrigins"]!).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+        policy.WithOrigins(corsSettings.GetSection("AllowedOrigins").Get<string[]>()!).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
     });
 });
 
