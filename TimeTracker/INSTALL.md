@@ -4,48 +4,49 @@
 
 ### Install custom package from microsoft
 
-_$ wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb_
+_wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb_
 <br>
-_$ dpkg -i packages-microsoft-prod.deb_
+_dpkg -i packages-microsoft-prod.deb_
 <br>
-_$ rm packages-microsoft-prod.deb_
+_rm packages-microsoft-prod.deb_
 
 ### Install git
 
-_$ apt install git_
+_apt install git_
 
 ### Install certbot
 
-_$ apt install certbot python3-certbot-apache_
+_apt install certbot python3-certbot-apache_
 
 ### Install SDK
 
-_$ apt-get update_
+_apt-get update_
 <br>
-_$ apt-get install -y dotnet-sdk-9.0_
+_apt-get install -y dotnet-sdk-9.0_
 
 ### Update all packages
 
-_$ apt-get update_
+_apt-get update_
 <br>
-_$ apt-get upgrade_
+_apt-get upgrade_
 
 ### Install Apache
 
-_$ apt install apache2_
+_apt install apache2_
 
 ### Install and enable apache modules
 
-_$ a2enmod proxy proxy_http_
+_a2enmod proxy proxy_http_
 <br>
-_$ systemctl restart apache2_
+_systemctl restart apache2_
 
 ### Create apache config
 
-_$ touch /etc/apache2/sites-available/EarthGolem.conf_
+_touch /etc/apache2/sites-available/EarthGolem.conf_
 
 ```
 <VirtualHost *:80> 
+    ServerName earthgolem.perforator.xyz
     ProxyPreserveHost On 
     ProxyPass / http://localhost:5000/ 
     ProxyPassReverse / http://localhost:5000/ 
@@ -57,53 +58,53 @@ _$ touch /etc/apache2/sites-available/EarthGolem.conf_
 
 ### Deactivate old and activate new configuration, test and reload apache
 
-_$ cd /etc/apache2/sites-available/_
+_cd /etc/apache2/sites-available/_
 <br>
-_$ a2dissite 000-default.conf_
+_a2dissite 000-default.conf_
 <br>
-_$ rm 000-default.conf_
+_rm 000-default.conf_
 <br>
-_$ a2ensite EarthGolem.conf_
+_a2ensite EarthGolem.conf_
 <br>
-_$ apache2ctl configtest_
+_apache2ctl configtest_
 <br>
-_$ systemctl reload apache2_
+_systemctl reload apache2_
 
 ## Install and configure project
 
 ### Go to working dir
 
-_$ cd /var/www_
+_cd /var/www_
 
 ### Clone repo
 
-_$ git clone https://github.com/dmtkomkov/EarthGolem.git_
+_git clone https://github.com/dmtkomkov/EarthGolem.git_
 
 ### Go to project folder
 
-_$ cd EarthGolem/TimeTracker/_
+_cd EarthGolem/TimeTracker/_
 
 ### Install aspnet packages
 
-_$ dotnet restore_
+_dotnet restore_
 
 ### Install dotnet-ef tool and migrate database
 
-_$ dotnet tool install --global dotnet-ef_
+_dotnet tool install --global dotnet-ef_
 <br>
-_$ dotnet ef database update_
+_dotnet ef database update_
 
 ### Create admin
 
-_$ dotnet create-user --name admin --password P@ssw0rd_
+_dotnet create-user --name admin --password some#password_
 
 ### Build and publish project
 
-_$ dotnet build -c Release -o ./publish_
+_dotnet build -c Release -o ./publish_
 
 ### Create service config
 
-_$ touch /etc/systemd/system/timetracker.service_
+_touch /etc/systemd/system/timetracker.service_
 
 ```
 [Unit]
@@ -117,6 +118,7 @@ Restart=always
 RestartSec=10
 SyslogIdentifier=timetracker
 Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=Jwt__Key=SomeKey#ChangeIT
 
 [Install]
 WantedBy=multi-user.target
@@ -124,23 +126,23 @@ WantedBy=multi-user.target
 
 ### Run and check timetracker service
 
-_$ systemctl daemon-reload_
+_systemctl daemon-reload_
 <br>
-_$ systemctl start timetracker.service_
+_systemctl enable timetracker.service_
 <br>
-_$ systemctl enable timetracker.service_
+_systemctl start timetracker.service_
 <br>
-_$ systemctl status timetracker.service_
+_systemctl status timetracker.service_
 
 ## Install Certificate
 
 ### Request Certificate
 
-_$ certbot --apache -d earthgolem.perforator.xyz_
+_certbot --apache -d earthgolem.perforator.xyz_
 
 ### Automate renew certificate
 
-_$ crontab -e_
+_crontab -e_
 ```
 31 1 * * * /usr/bin/certbot renew
 ```
