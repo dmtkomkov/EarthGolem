@@ -13,6 +13,7 @@ public static class StepMapper
             Duration = stepModel.Duration,
             CompletedOn = stepModel.CompletedOn,
             Description = stepModel.Description,
+            User = stepModel.User.ToDto(),
         };
     }
 
@@ -23,13 +24,14 @@ public static class StepMapper
         stepModel.Description = stepDto.Description;
     }
 
-    public static Step ToModel(this CreateStepDto stepDto)
+    public static Step ToModel(this CreateStepDto stepDto, string userId)
     {
         return new Step()
         {
             Duration = stepDto.Duration,
             CompletedOn = stepDto.CompletedOn,
             Description = stepDto.Description,
+            UserId = userId,
         };
     }
 }

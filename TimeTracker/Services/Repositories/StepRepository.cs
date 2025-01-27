@@ -11,17 +11,17 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
 {
     public async Task<List<Step>> GetAllAsync()
     {
-        return await context.Steps.ToListAsync();
+        return await context.Steps.Include(s => s.User).ToListAsync();
     }
 
     public async Task<Step?> GetByIdAsync(int id)
     {
-        return await context.Steps.FindAsync(id);
+        return await context.Steps.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == id);
     }
 
-    public async Task<Step> CreateAsync(CreateStepDto stepDto)
+    public async Task<Step> CreateAsync(CreateStepDto stepDto, string userId)
     {
-        var stepModel = stepDto.ToModel();
+        var stepModel = stepDto.ToModel(userId);
         await context.Steps.AddAsync(stepModel);
         await context.SaveChangesAsync();
         return stepModel;

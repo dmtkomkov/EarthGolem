@@ -10,6 +10,7 @@ namespace TimeTracker.Controllers;
 public class AuthController(
         UserManager<IdentityUser> userManager,
         SignInManager<IdentityUser> signInManager,
+        IConfiguration configuration,
         ITokenService tokenService
     ) : ControllerBase
 {
@@ -77,10 +78,11 @@ public class AuthController(
     }
 
     private async Task<IActionResult> GenerateTokens(IdentityUser user) {
-        // var expireMinutes = Convert.ToDouble(configuration["Jwt:ExpireMinutes"]);
+        var expireMinutes = Convert.ToDouble(configuration["Jwt:ExpireMinutes"]);
+        var expireDays = Convert.ToDouble(configuration["Jwt:ExpireDays"]);
         
-        var newToken = tokenService.GenerateJwtToken(user.Id, DateTime.UtcNow.AddMinutes(1));
-        var newRefreshToken = tokenService.GenerateJwtToken(user.Id, DateTime.UtcNow.AddMinutes(5));
+        var newToken = tokenService.GenerateJwtToken(user.Id, DateTime.UtcNow.AddMinutes(expireMinutes));
+        var newRefreshToken = tokenService.GenerateJwtToken(user.Id, DateTime.UtcNow.AddDays(expireDays));
     
         var setResult = await userManager.SetAuthenticationTokenAsync(
             user,

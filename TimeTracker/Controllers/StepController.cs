@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.Dtos;
 using TimeTracker.Interfaces;
@@ -9,7 +10,7 @@ namespace TimeTracker.Controllers;
 [ApiController]
 [Route("api/step")]
 [Authorize]
-public class StepController(IStepRepository stepRepo) : ControllerBase
+public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> userManager) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll() {
@@ -33,7 +34,9 @@ public class StepController(IStepRepository stepRepo) : ControllerBase
     
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateStepDto stepDto) {
-        var stepModel = await stepRepo.CreateAsync(stepDto);
+        var user = await userManager.GetUserAsync(User);
+
+        var stepModel = await stepRepo.CreateAsync(stepDto, user.Id);
         
         return Created(string.Empty, stepModel.ToDto());
     }
