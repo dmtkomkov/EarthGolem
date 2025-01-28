@@ -31,8 +31,7 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
     {
         var stepModel = await context.Steps.FindAsync(id);
 
-        if (stepModel == null)
-        {
+        if (stepModel == null) {
             return null;
         }
 

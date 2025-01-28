@@ -85,6 +85,7 @@ builder.Services.AddAuthentication(options => {
 
 builder.Services.AddScoped<IStepRepository, StepRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Configuration.AddEnvironmentVariables();

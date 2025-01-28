@@ -26,8 +26,7 @@ public class AreaRepository(ApplicationDbContext context) : IAreaRepository {
     public async Task<Area?> UpdateAsync(int id, UpdateAreaDto areaDto) {
         var areaModel = await context.Areas.FindAsync(id);
 
-        if (areaModel == null)
-        {
+        if (areaModel == null) {
             return null;
         }
 

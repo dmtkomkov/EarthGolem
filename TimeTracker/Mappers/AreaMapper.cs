@@ -25,6 +25,6 @@ public static class AreaMapper {
     public static void UpdateModelFromDto(this Area areaModel, UpdateAreaDto areaDto) {
         areaModel.Name = areaDto.Name;
         areaModel.Color = areaDto.Color;
-        areaModel.Description = areaModel.Description;
+        areaModel.Description = areaDto.Description;
     }
 }

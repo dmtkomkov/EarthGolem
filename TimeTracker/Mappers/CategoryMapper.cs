@@ -13,4 +13,20 @@ public static class CategoryMapper {
             AreaId = categoryModel.AreaId,
         };
     }
+    
+    public static Category ToModel(this CreateCategoryDto categoryDto) {
+        return new Category() {
+            Name = categoryDto.Name,
+            Color = categoryDto.Color,
+            Description = categoryDto.Description,
+            AreaId = categoryDto.AreaId,
+        };
+    }
+
+    public static void UpdateModelFromDto(this Category categoryModel, UpdateCategoryDto categoryDto) {
+        categoryModel.Name = categoryDto.Name;
+        categoryModel.Color = categoryDto.Color;
+        categoryModel.Description = categoryDto.Description;
+        categoryModel.AreaId = categoryDto.AreaId;
+    }
 }

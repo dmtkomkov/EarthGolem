@@ -13,15 +13,8 @@ public static class StepMapper
             Duration = stepModel.Duration,
             CompletedOn = stepModel.CompletedOn,
             Description = stepModel.Description,
-            User = stepModel.User!.ToDto(),
+            User = stepModel.User?.ToDto(),
         };
-    }
-
-    public static void UpdateModelFromDto(this Step stepModel, UpdateStepDto stepDto)
-    {
-        stepModel.Duration = stepDto.Duration;
-        stepModel.CompletedOn = stepDto.CompletedOn;
-        stepModel.Description = stepDto.Description;
     }
 
     public static Step ToModel(this CreateStepDto stepDto, string userId)
@@ -33,5 +26,13 @@ public static class StepMapper
             Description = stepDto.Description,
             UserId = userId,
         };
+    }
+    
+    public static void UpdateModelFromDto(this Step stepModel, UpdateStepDto stepDto)
+    {
+        stepModel.Duration = stepDto.Duration;
+        stepModel.CompletedOn = stepDto.CompletedOn;
+        stepModel.Description = stepDto.Description;
+        stepModel.UserId = stepDto.UserId;
     }
 }

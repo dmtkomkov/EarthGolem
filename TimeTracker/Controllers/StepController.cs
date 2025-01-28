@@ -36,6 +36,10 @@ public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> 
     public async Task<IActionResult> Create([FromBody] CreateStepDto stepDto) {
         var user = await userManager.GetUserAsync(User);
 
+        if (user == null) {
+            return BadRequest("Cannot create step without user");
+        }
+
         var stepModel = await stepRepo.CreateAsync(stepDto, user.Id);
         
         return Created(string.Empty, stepModel.ToDto());
