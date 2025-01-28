@@ -13,7 +13,7 @@ public static class StepMapper
             Duration = stepModel.Duration,
             CompletedOn = stepModel.CompletedOn,
             Description = stepModel.Description,
-            User = stepModel.User.ToDto(),
+            User = stepModel.User!.ToDto(),
         };
     }
 

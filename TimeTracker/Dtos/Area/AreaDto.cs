@@ -1,18 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
+using TimeTracker.Dtos.Category;
 
-namespace TimeTracker.Models;
+namespace TimeTracker.Dtos.Area;
 
-public class Goal {
+public class AreaDto {
     public int Id { get; set; }
+    [Required]
     [MaxLength(36)]
     public string Name { get; set; } = string.Empty;
-    public Color Color { get; set; }
-    [MaxLength(500)]
-    public string Description { get; set; } = string.Empty;
-    public DateOnly? StartDate { get; set; }
-    public DateOnly? CloseDate { get; set; }
     [Required]
-    public int ProjectId { get; set; }
-    public Project? Project { get; set; }
+    public Color Color { get; set; }
+    [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
+    public string Description { get; set; } = string.Empty;
+    [Required]
+    public List<CategoryDto> Categories { get; set; } = [];
 }

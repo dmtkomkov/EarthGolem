@@ -39,14 +39,19 @@ builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
+// builder.Services.AddControllers();
 builder.Services.AddControllers().AddNewtonsoftJson(options => {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+    options.SerializerSettings.Converters.Add(new ColorJsonConverter());
 });
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("StoneGolemLocal", policy => {
-        policy.WithOrigins(corsSettings.GetSection("AllowedOrigins").Get<string[]>()!).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+        policy.WithOrigins(corsSettings.GetSection("AllowedOrigins").Get<string[]>()!)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -79,6 +84,7 @@ builder.Services.AddAuthentication(options => {
     });
 
 builder.Services.AddScoped<IStepRepository, StepRepository>();
+builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Configuration.AddEnvironmentVariables();

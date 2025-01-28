@@ -54,9 +54,9 @@ public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> 
     
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id) {
-        var stockModel = await stepRepo.DeleteAsync(id);
+        var stepModel = await stepRepo.DeleteAsync(id);
         
-        if (stockModel == null) {
+        if (stepModel == null) {
             return NotFound();
         }
 
