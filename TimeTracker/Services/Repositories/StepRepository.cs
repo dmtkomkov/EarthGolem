@@ -37,7 +37,6 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
 
         stepModel.UpdateModelFromDto(stepDto);
         await context.SaveChangesAsync();
-
         return stepModel;
     }
 
@@ -51,7 +50,6 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
 
         context.Steps.Remove(stepModel);
         await context.SaveChangesAsync();
-
         return stepModel;
     }
 

@@ -32,7 +32,6 @@ public class AreaRepository(ApplicationDbContext context) : IAreaRepository {
 
         areaModel.UpdateModelFromDto(areaDto);
         await context.SaveChangesAsync();
-
         return areaModel;
     }
 
@@ -45,7 +44,6 @@ public class AreaRepository(ApplicationDbContext context) : IAreaRepository {
 
         context.Areas.Remove(areaModel);
         await context.SaveChangesAsync();
-
         return areaModel;
     }
 

@@ -4,7 +4,7 @@ using TimeTracker.Models;
 namespace TimeTracker.Mappers;
 
 public static class ProjectMapper {
-    public static ProjectDto ToDto(Project projectModel) {
+    public static ProjectDto ToDto(this Project projectModel) {
         return new ProjectDto() {
             Id = projectModel.Id,
             Name = projectModel.Name,
@@ -15,5 +15,20 @@ public static class ProjectMapper {
             Status = projectModel.Status,
             Goals = projectModel.Goals.Select(g => g.ToDto()).ToList(),
         };
+    }
+    
+    public static Project ToModel(this CreateProjectDto projectDto) {
+        return new Project() {
+            Name = projectDto.Name,
+            Color = projectDto.Color,
+            Description = projectDto.Description,
+        };
+    }
+
+    public static void UpdateModelFromDto(this Project projectModel, UpdateProjectDto projectDto) {
+        projectModel.Name = projectDto.Name;
+        projectModel.Color = projectDto.Color;
+        projectModel.Description = projectDto.Description;
+        projectModel.Status = projectDto.Status;
     }
 }

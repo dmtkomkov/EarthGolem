@@ -39,7 +39,6 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
 
         categoryModel.UpdateModelFromDto(categoryDto);
         await context.SaveChangesAsync();
-
         return categoryModel;
     }
 
@@ -52,7 +51,6 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
 
         context.Categories.Remove(categoryModel);
         await context.SaveChangesAsync();
-
         return categoryModel;
     }
 

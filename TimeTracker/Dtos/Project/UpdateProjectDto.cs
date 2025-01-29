@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
+using TimeTracker.Enums;
 
 namespace TimeTracker.Dtos.Project;
 
@@ -11,4 +12,6 @@ public class UpdateProjectDto {
     public Color Color { get; set; }
     [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
     public string Description { get; set; } = string.Empty;
+    [Required]
+    public ProjectStatus Status { get; set; }
 }
