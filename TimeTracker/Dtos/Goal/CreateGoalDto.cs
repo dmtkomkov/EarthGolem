@@ -11,6 +11,5 @@ public class CreateGoalDto {
     public Color Color { get; set; }
     [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
     public string Description { get; set; } = string.Empty;
-    [Required]
-    public int ProjectId { get; set; }
+    public int? ProjectId { get; set; }
 }

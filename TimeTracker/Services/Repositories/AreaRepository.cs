@@ -9,11 +9,15 @@ namespace TimeTracker.Services.Repositories;
 
 public class AreaRepository(ApplicationDbContext context) : IAreaRepository {
     public async Task<List<Area>> GetAllAsync() {
-        return await context.Areas.Include(a => a.Categories).ToListAsync();
+        return await context.Areas
+            .Include(a => a.Categories)
+            .ToListAsync();
     }
 
     public async Task<Area?> GetByIdAsync(int id) {
-        return await context.Areas.Include(a => a.Categories).FirstOrDefaultAsync(s => s.Id == id);
+        return await context.Areas
+            .Include(a => a.Categories)
+            .FirstOrDefaultAsync(s => s.Id == id);
     }
 
     public async Task<Area> CreateAsync(CreateAreaDto areaDto) {

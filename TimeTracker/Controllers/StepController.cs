@@ -41,6 +41,10 @@ public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> 
         }
 
         var stepModel = await stepRepo.CreateAsync(stepDto, user.Id);
+
+        if (stepModel == null) {
+            return BadRequest("Step is not created");
+        }
         
         return Created(string.Empty, stepModel.ToDto());
     }

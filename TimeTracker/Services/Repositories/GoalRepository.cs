@@ -9,20 +9,18 @@ namespace TimeTracker.Services.Repositories;
 
 public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
     public async Task<List<Goal>> GetAllAsync() {
-        return await context.Goals.ToListAsync();
+        return await context.Goals
+            .Include(g => g.Project)
+            .ToListAsync();
     }
 
     public async Task<Goal?> GetByIdAsync(int id) {
-        return await context.Goals.FindAsync(id);
+        return await context.Goals
+            .Include(g => g.Project)
+            .FirstOrDefaultAsync(g => g.Id == id);
     }
 
     public async Task<Goal?> CreateAsync(CreateGoalDto goalDto) {
-        var projectModel = await context.Areas.FindAsync(goalDto.ProjectId);
-        
-        if (projectModel == null) {
-            return null;
-        }
-        
         var goalModel = goalDto.ToModel();
         await context.Goals.AddAsync(goalModel);
         await context.SaveChangesAsync();
@@ -31,9 +29,8 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
 
     public async Task<Goal?> UpdateAsync(int id, UpdateGoalDto goalDto) {
         var goalModel = await context.Goals.FindAsync(id);
-        var projectModel = await context.Areas.FindAsync(goalDto.ProjectId);
         
-        if (goalModel == null || projectModel == null) {
+        if (goalModel == null) {
             return null;
         }
 

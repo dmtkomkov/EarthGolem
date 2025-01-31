@@ -4,6 +4,16 @@ using TimeTracker.Models;
 namespace TimeTracker.Mappers;
 
 public static class CategoryMapper {
+    public static CategoryFlatDto ToFlatDto(this Category categoryModel) {
+        return new CategoryFlatDto() {
+            Id = categoryModel.Id,
+            Name = categoryModel.Name,
+            Color = categoryModel.Color,
+            Description = categoryModel.Description,
+            AreaId = categoryModel.AreaId,
+        };
+    }
+    
     public static CategoryDto ToDto(this Category categoryModel) {
         return new CategoryDto() {
             Id = categoryModel.Id,
@@ -11,6 +21,7 @@ public static class CategoryMapper {
             Color = categoryModel.Color,
             Description = categoryModel.Description,
             AreaId = categoryModel.AreaId,
+            Area = categoryModel.Area!.ToFlatDto()
         };
     }
     

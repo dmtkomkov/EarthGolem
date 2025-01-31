@@ -38,7 +38,7 @@ public class CategoryController(ICategoryRepository categoryRepo) : ControllerBa
             return NotFound();
         }
         
-        return Created(string.Empty, categoryModel.ToDto());
+        return Created(string.Empty, categoryModel.ToFlatDto());
     }
     
     [HttpPut("{id:int}")]
@@ -49,7 +49,7 @@ public class CategoryController(ICategoryRepository categoryRepo) : ControllerBa
             return NotFound();
         }
         
-        return Ok(categoryModel.ToDto());
+        return Ok(categoryModel.ToFlatDto());
     }
     
     [HttpDelete("{id:int}")]

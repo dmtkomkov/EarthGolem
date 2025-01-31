@@ -9,11 +9,15 @@ namespace TimeTracker.Services.Repositories;
 
 public class ProjectRepository(ApplicationDbContext context) : IProjectRepository {
     public async Task<List<Project>> GetAllAsync() {
-        return await context.Projects.Include(p => p.Goals).ToListAsync();
+        return await context.Projects
+            .Include(p => p.Goals)
+            .ToListAsync();
     }
 
     public async Task<Project?> GetByIdAsync(int id) {
-        return await context.Projects.Include(p => p.Goals).FirstOrDefaultAsync(s => s.Id == id);
+        return await context.Projects
+            .Include(p => p.Goals)
+            .FirstOrDefaultAsync(s => s.Id == id);
     }
 
     public async Task<Project> CreateAsync(CreateProjectDto projectDto) {

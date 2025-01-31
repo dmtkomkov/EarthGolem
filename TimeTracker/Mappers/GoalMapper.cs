@@ -4,6 +4,18 @@ using TimeTracker.Models;
 namespace TimeTracker.Mappers;
 
 public static class GoalMapper {
+    public static GoalFlatDto ToFlatDto(this Goal goalModel) {
+        return new GoalFlatDto() {
+            Id = goalModel.Id,
+            Name = goalModel.Name,
+            Color = goalModel.Color,
+            Description = goalModel.Description,
+            StartDate = goalModel.StartDate,
+            CloseDate = goalModel.StartDate,
+            ProjectId = goalModel.ProjectId,
+        };
+    }
+    
     public static GoalDto ToDto(this Goal goalModel) {
         return new GoalDto() {
             Id = goalModel.Id,
@@ -13,6 +25,7 @@ public static class GoalMapper {
             StartDate = goalModel.StartDate,
             CloseDate = goalModel.StartDate,
             ProjectId = goalModel.ProjectId,
+            Project = goalModel.Project?.ToFlatDto(),
         };
     }
     

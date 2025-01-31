@@ -34,7 +34,7 @@ public class AreaController(IAreaRepository areaRepo) : ControllerBase {
     public async Task<IActionResult> Create([FromBody] CreateAreaDto areaDto) {
         var areaModel = await areaRepo.CreateAsync(areaDto);
         
-        return Created(string.Empty, areaModel.ToDto());
+        return Created(string.Empty, areaModel.ToFlatDto());
     }
     
     [HttpPut("{id:int}")]
@@ -45,7 +45,7 @@ public class AreaController(IAreaRepository areaRepo) : ControllerBase {
             return NotFound();
         }
         
-        return Ok(areaModel.ToDto());
+        return Ok(areaModel.ToFlatDto());
     }
     
     [HttpDelete("{id:int}")]

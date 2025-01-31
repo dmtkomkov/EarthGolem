@@ -4,13 +4,21 @@ using TimeTracker.Models;
 namespace TimeTracker.Mappers;
 
 public static class AreaMapper {
+    public static AreaFlatDto ToFlatDto(this Area areaModel) {
+        return new AreaFlatDto() {
+            Id = areaModel.Id,
+            Name = areaModel.Name,
+            Color = areaModel.Color,
+            Description = areaModel.Description,
+        };
+    }
     public static AreaDto ToDto(this Area areaModel) {
         return new AreaDto() {
             Id = areaModel.Id,
             Name = areaModel.Name,
             Color = areaModel.Color,
             Description = areaModel.Description,
-            Categories = areaModel.Categories.Select(c => c.ToDto()).ToList(),
+            Categories = areaModel.Categories.Select(c => c.ToFlatDto()).ToList(),
         };
     }
 

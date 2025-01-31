@@ -38,7 +38,7 @@ public class GoalController(IGoalRepository goalRepo) : ControllerBase {
             return NotFound();
         }
         
-        return Created(string.Empty, goalModel.ToDto());
+        return Created(string.Empty, goalModel.ToFlatDto());
     }
     
     [HttpPut("{id:int}")]
@@ -49,7 +49,7 @@ public class GoalController(IGoalRepository goalRepo) : ControllerBase {
             return NotFound();
         }
         
-        return Ok(goalModel.ToDto());
+        return Ok(goalModel.ToFlatDto());
     }
     
     [HttpDelete("{id:int}")]

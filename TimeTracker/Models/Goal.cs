@@ -12,7 +12,6 @@ public class Goal {
     public string Description { get; set; } = string.Empty;
     public DateOnly? StartDate { get; set; }
     public DateOnly? CloseDate { get; set; }
-    [Required]
-    public int ProjectId { get; set; }
+    public int? ProjectId { get; set; }
     public Project? Project { get; set; }
 }

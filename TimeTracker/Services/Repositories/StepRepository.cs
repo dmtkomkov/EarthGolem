@@ -15,7 +15,9 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
             .AsNoTracking()
             .Include(s => s.User)
             .Include(s => s.Category)
+                .ThenInclude(c => c.Area)
             .Include(s => s.Goal)
+                .ThenInclude(g => g.Project)
             .ToListAsync();
     }
 
@@ -25,7 +27,9 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
             .AsNoTracking()
             .Include(s => s.User)
             .Include(s => s.Category)
+                .ThenInclude(c => c.Area)
             .Include(s => s.Goal)
+                .ThenInclude(g => g.Project)
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
@@ -38,7 +42,9 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
             .AsNoTracking()
             .Include(s => s.User)
             .Include(s => s.Category)
+                .ThenInclude(c => c.Area)
             .Include(s => s.Goal)
+                .ThenInclude(g => g.Project)
             .FirstOrDefaultAsync(s => s.Id == stepModel.Id);
     }
 
@@ -56,7 +62,9 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
             .AsNoTracking()
             .Include(s => s.User)
             .Include(s => s.Category)
+                .ThenInclude(c => c.Area)
             .Include(s => s.Goal)
+                .ThenInclude(g => g.Project)
             .FirstOrDefaultAsync(s => s.Id == stepModel.Id);
     }
 

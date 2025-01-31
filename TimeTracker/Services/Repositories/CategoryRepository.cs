@@ -9,11 +9,15 @@ namespace TimeTracker.Services.Repositories;
 
 public class CategoryRepository(ApplicationDbContext context) : ICategoryRepository {
     public async Task<List<Category>> GetAllAsync() {
-        return await context.Categories.ToListAsync();
+        return await context.Categories
+            .Include(c => c.Area)
+            .ToListAsync();
     }
 
     public async Task<Category?> GetByIdAsync(int id) {
-        return await context.Categories.FindAsync(id);
+        return await context.Categories
+            .Include(c => c.Area)
+            .FirstOrDefaultAsync(c => c.Id == id);
     }
 
     public async Task<Category?> CreateAsync(CreateCategoryDto categoryDto) {
