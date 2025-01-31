@@ -9,7 +9,13 @@ public class Step {
     public DateOnly CompletedOn { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     [MaxLength(500)]
     public string Description { get; set; } = string.Empty;
+    [Required]
     [MaxLength(36)]
-    public string? UserId { get; set; }
+    public required string UserId { get; set; }
     public IdentityUser? User { get; set; }
+    [Required]
+    public int CategoryId { get; set; }
+    public Category? Category { get; set; }
+    public int? GoalId { get; set; }
+    public Goal? Goal { get; set; }
 }

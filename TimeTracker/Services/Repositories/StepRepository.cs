@@ -11,20 +11,35 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
 {
     public async Task<List<Step>> GetAllAsync()
     {
-        return await context.Steps.Include(s => s.User).ToListAsync();
+        return await context.Steps
+            .AsNoTracking()
+            .Include(s => s.User)
+            .Include(s => s.Category)
+            .Include(s => s.Goal)
+            .ToListAsync();
     }
 
     public async Task<Step?> GetByIdAsync(int id)
     {
-        return await context.Steps.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == id);
+        return await context.Steps
+            .AsNoTracking()
+            .Include(s => s.User)
+            .Include(s => s.Category)
+            .Include(s => s.Goal)
+            .FirstOrDefaultAsync(s => s.Id == id);
     }
 
-    public async Task<Step> CreateAsync(CreateStepDto stepDto, string userId)
+    public async Task<Step?> CreateAsync(CreateStepDto stepDto, string userId)
     {
         var stepModel = stepDto.ToModel(userId);
         await context.Steps.AddAsync(stepModel);
         await context.SaveChangesAsync();
-        return stepModel;
+        return await context.Steps
+            .AsNoTracking()
+            .Include(s => s.User)
+            .Include(s => s.Category)
+            .Include(s => s.Goal)
+            .FirstOrDefaultAsync(s => s.Id == stepModel.Id);
     }
 
     public async Task<Step?> UpdateAsync(int id, UpdateStepDto stepDto)
@@ -37,7 +52,12 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
 
         stepModel.UpdateModelFromDto(stepDto);
         await context.SaveChangesAsync();
-        return stepModel;
+        return await context.Steps
+            .AsNoTracking()
+            .Include(s => s.User)
+            .Include(s => s.Category)
+            .Include(s => s.Goal)
+            .FirstOrDefaultAsync(s => s.Id == stepModel.Id);
     }
 
     public async Task<Step?> DeleteAsync(int id)

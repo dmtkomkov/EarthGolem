@@ -13,7 +13,9 @@ public static class StepMapper
             Duration = stepModel.Duration,
             CompletedOn = stepModel.CompletedOn,
             Description = stepModel.Description,
-            User = stepModel.User?.ToDto(),
+            User = stepModel.User!.ToDto(),
+            Category = stepModel.Category!.ToDto(),
+            Goal = stepModel.Goal?.ToDto()
         };
     }
 
@@ -25,6 +27,8 @@ public static class StepMapper
             CompletedOn = stepDto.CompletedOn,
             Description = stepDto.Description,
             UserId = userId,
+            CategoryId = stepDto.CategoryId,
+            GoalId = stepDto.GoalId,
         };
     }
     
@@ -34,5 +38,7 @@ public static class StepMapper
         stepModel.CompletedOn = stepDto.CompletedOn;
         stepModel.Description = stepDto.Description;
         stepModel.UserId = stepDto.UserId;
+        stepModel.CategoryId = stepDto.CategoryId;
+        stepModel.GoalId = stepModel.GoalId;
     }
 }

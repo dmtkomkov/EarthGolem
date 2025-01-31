@@ -10,4 +10,6 @@ public class CreateStepDto
     public DateOnly CompletedOn { get; set; }
     [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
     public string Description { get; set; } = string.Empty;
+    public int CategoryId { get; set; }
+    public int? GoalId { get; set; }
 }

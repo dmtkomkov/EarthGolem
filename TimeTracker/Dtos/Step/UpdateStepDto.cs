@@ -12,5 +12,7 @@ public class UpdateStepDto
     [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
     public string Description { get; set; } = string.Empty;
     [Required]
-    public string? UserId { get; set; }
+    public required string UserId { get; set; }
+    public int CategoryId { get; set; }
+    public int? GoalId { get; set; }
 }
