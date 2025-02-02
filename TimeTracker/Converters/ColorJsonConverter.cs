@@ -2,6 +2,8 @@ using System.Drawing;
 using Newtonsoft.Json;
 using TimeTracker.Exceptions;
 
+namespace TimeTracker.Converters;
+
 public class ColorJsonConverter() : JsonConverter<Color>
 {
     public override void WriteJson(JsonWriter writer, Color value, JsonSerializer serializer)

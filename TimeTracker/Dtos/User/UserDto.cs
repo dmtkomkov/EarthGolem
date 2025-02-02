@@ -4,7 +4,7 @@ namespace TimeTracker.Dtos.User;
 
 public class UserDto {
     [Required]
-    public string? UserId { get; set; }
+    public required string UserId { get; set; }
     [Required]
-    public string? UserName { get; set; }
+    public required string UserName { get; set; }   
 }

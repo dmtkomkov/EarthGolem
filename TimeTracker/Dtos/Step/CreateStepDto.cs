@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TimeTracker.Dtos;
+namespace TimeTracker.Dtos.Step;
 
 public class CreateStepDto
 {

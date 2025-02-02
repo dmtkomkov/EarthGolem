@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
-using TimeTracker.Dtos;
+using TimeTracker.Dtos.Step;
 using TimeTracker.Interfaces;
 using TimeTracker.Mappers;
 using TimeTracker.Models;
@@ -20,6 +20,37 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
                 .ThenInclude(g => g.Project)
             .ToListAsync();
     }
+    
+    public async Task<List<StepGroup>> GetAllGroupedByDateAsync() {
+        var distinctDates = await context.Steps
+            .AsNoTracking()
+            .Select(s => s.CompletedOn)
+            .Distinct()
+            .OrderByDescending(d => d)
+            .ToListAsync();
+        
+        if (distinctDates.Count == 0)
+            return [];
+        
+        var grouped = await context.Steps
+            .AsNoTracking()
+            .Include(s => s.User)
+            .Include(s => s.Category)
+                .ThenInclude(c => c.Area)
+            .Include(s => s.Goal)
+                .ThenInclude(g => g.Project)
+            .Where(s => distinctDates.Contains(s.CompletedOn))
+            .GroupBy(s => s.CompletedOn)
+            .Select(g => new StepGroup {
+                CompletedOn = g.Key,
+                Steps = g.OrderByDescending(s => s.Id).ToList()
+            })
+            .OrderByDescending(g => g.CompletedOn)
+            .ToListAsync();
+
+        return grouped;
+    }
+
 
     public async Task<Step?> GetByIdAsync(int id)
     {

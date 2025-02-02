@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TimeTracker;
+using TimeTracker.Converters;
 using TimeTracker.Data;
 using TimeTracker.Interfaces;
 using TimeTracker.Services;

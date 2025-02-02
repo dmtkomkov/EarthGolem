@@ -3,7 +3,7 @@ using TimeTracker.Dtos.Category;
 using TimeTracker.Dtos.Goal;
 using TimeTracker.Dtos.User;
 
-namespace TimeTracker.Dtos;
+namespace TimeTracker.Dtos.Step;
 
 public class StepDto
 {
@@ -15,6 +15,6 @@ public class StepDto
     [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
     public string Description { get; set; } = string.Empty;
     public required UserDto User { get; set; }
-    public required CategoryFlatDto Category { get; set; }
-    public GoalFlatDto? Goal { get; set; }
+    public required CategoryDto Category { get; set; }
+    public GoalDto? Goal { get; set; }
 }

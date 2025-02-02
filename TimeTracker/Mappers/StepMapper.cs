@@ -1,10 +1,19 @@
-﻿using TimeTracker.Dtos;
+﻿using TimeTracker.Dtos.Step;
 using TimeTracker.Models;
 
 namespace TimeTracker.Mappers;
 
 public static class StepMapper
 {
+    public static StepGroupDto ToGroupDto(this StepGroup stepGroup)
+    {
+        return new StepGroupDto()
+        {
+            CompletedOn = stepGroup.CompletedOn,
+            Steps = stepGroup.Steps.Select(s => s.ToDto()).ToList(),
+        };
+    }
+    
     public static StepDto ToDto(this Step stepModel)
     {
         return new StepDto()

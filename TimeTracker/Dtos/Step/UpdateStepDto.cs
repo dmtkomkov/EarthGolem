@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
-namespace TimeTracker.Dtos;
+namespace TimeTracker.Dtos.Step;
 
 public class UpdateStepDto
 {
