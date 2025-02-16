@@ -19,6 +19,15 @@ public class GoalController(IGoalRepository goalRepo) : ControllerBase {
         return Ok(goalDtos);
     }
     
+    [HttpGet("group")]
+    public async Task<IActionResult> GetAllGroupedByProject() {
+        var goalGroups = await goalRepo.GetAllGroupedByProjectAsync();
+
+        var goalGroupDtos = goalGroups.Select(gg => gg.ToGroupDto());
+
+        return Ok(goalGroupDtos);
+    }
+    
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id) {
         var goalModel = await goalRepo.GetByIdAsync(id);

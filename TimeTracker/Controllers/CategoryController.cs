@@ -21,7 +21,7 @@ public class CategoryController(ICategoryRepository categoryRepo) : ControllerBa
     
     [HttpGet("group")]
     public async Task<IActionResult> GetAllGroupedByArea() {
-        var categoryGroups = await categoryRepo.GetCategoriesGroupedByAreaAsync();
+        var categoryGroups = await categoryRepo.GetAllGroupedByAreaAsync();
 
         var categoryGroupDtos = categoryGroups.Select(cg => cg.ToGroupDto());
 

@@ -14,7 +14,7 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
             .ToListAsync();
     }
     
-    public async Task<List<CategoryGroup>> GetCategoriesGroupedByAreaAsync() {
+    public async Task<List<CategoryGroup>> GetAllGroupedByAreaAsync() {
         var areas = await context.Areas
             .AsNoTracking()
             .OrderByDescending(a => a.Id)
@@ -28,9 +28,9 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
             .GroupBy(c => c.Area)
             .Select(g => new CategoryGroup() {
                 Area = g.Key,
-                Categories = g.OrderByDescending(s => s.Id).ToList()
+                Categories = g.OrderByDescending(c => c.Id).ToList()
             })
-            .OrderByDescending(g => g.Area.Id)
+            .OrderByDescending(g => g.Area!.Id)
             .ToListAsync();
 
         return groupedCategories;

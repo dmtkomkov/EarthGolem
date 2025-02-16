@@ -6,6 +6,7 @@ namespace TimeTracker.Interfaces;
 
 public interface IGoalRepository {
     Task<List<Goal>> GetAllAsync();
+    Task<List<GoalGroup>> GetAllGroupedByProjectAsync();
     Task<Goal?> GetByIdAsync(int id);
     Task<Goal?> CreateAsync(CreateGoalDto goalDto);
     Task<Goal?> UpdateAsync(int id, UpdateGoalDto goalDto);

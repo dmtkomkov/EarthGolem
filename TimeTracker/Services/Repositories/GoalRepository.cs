@@ -14,6 +14,28 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
             .ToListAsync();
     }
 
+    public async Task<List<GoalGroup>> GetAllGroupedByProjectAsync() {
+        var projects = await context.Projects
+            .AsNoTracking()
+            .OrderByDescending(p => p.Id)
+            .Select(p => p.Name)
+            .ToListAsync();
+        
+        var groupedGoals = await context.Goals
+            .AsNoTracking()
+            .Include(g => g.Project)
+            .Where(g => g.Project == null || projects.Contains(g.Project!.Name))
+            .GroupBy(g => g.Project)
+            .Select(g => new GoalGroup() {
+                Project = g.Key,
+                Goals = g.OrderByDescending(g => g.Id).ToList()
+            })
+            .OrderByDescending(g => g.Project != null ? g.Project.Id : 0)
+            .ToListAsync();
+
+        return groupedGoals;
+    }
+    
     public async Task<Goal?> GetByIdAsync(int id) {
         return await context.Goals
             .Include(g => g.Project)
