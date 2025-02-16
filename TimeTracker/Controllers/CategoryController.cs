@@ -19,6 +19,15 @@ public class CategoryController(ICategoryRepository categoryRepo) : ControllerBa
         return Ok(categoryDtos);
     }
     
+    [HttpGet("group")]
+    public async Task<IActionResult> GetAllGroupedByArea() {
+        var categoryGroups = await categoryRepo.GetCategoriesGroupedByAreaAsync();
+
+        var categoryGroupDtos = categoryGroups.Select(cg => cg.ToGroupDto());
+
+        return Ok(categoryGroupDtos);
+    }
+    
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id) {
         var categoryModel = await categoryRepo.GetByIdAsync(id);

@@ -4,6 +4,13 @@ using TimeTracker.Models;
 namespace TimeTracker.Mappers;
 
 public static class CategoryMapper {
+    public static CategoryGroupDto ToGroupDto(this CategoryGroup categoryGroup) {
+        return new CategoryGroupDto() {
+            Area = categoryGroup.Area!.ToFlatDto(),
+            Categories = categoryGroup.Categories.Select(s => s.ToFlatDto()).ToList(),
+        };
+    }
+
     public static CategoryFlatDto ToFlatDto(this Category categoryModel) {
         return new CategoryFlatDto() {
             Id = categoryModel.Id,

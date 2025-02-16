@@ -5,6 +5,7 @@ namespace TimeTracker.Interfaces;
 
 public interface ICategoryRepository {
     Task<List<Category>> GetAllAsync();
+    Task<List<CategoryGroup>> GetCategoriesGroupedByAreaAsync();
     Task<Category?> GetByIdAsync(int id);
     Task<Category?> CreateAsync(CreateCategoryDto categoryDto);
     Task<Category?> UpdateAsync(int id, UpdateCategoryDto categoryDto);

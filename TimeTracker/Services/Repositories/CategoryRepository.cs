@@ -13,6 +13,28 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
             .Include(c => c.Area)
             .ToListAsync();
     }
+    
+    public async Task<List<CategoryGroup>> GetCategoriesGroupedByAreaAsync() {
+        var areas = await context.Areas
+            .AsNoTracking()
+            .OrderByDescending(a => a.Id)
+            .Select(a => a.Name)
+            .ToListAsync();
+        
+        var groupedCategories = await context.Categories
+            .AsNoTracking()
+            .Include(c => c.Area)
+            .Where(c => areas.Contains(c.Area!.Name))
+            .GroupBy(c => c.Area)
+            .Select(g => new CategoryGroup() {
+                Area = g.Key,
+                Categories = g.OrderByDescending(s => s.Id).ToList()
+            })
+            .OrderByDescending(g => g.Area.Id)
+            .ToListAsync();
+
+        return groupedCategories;
+    }
 
     public async Task<Category?> GetByIdAsync(int id) {
         return await context.Categories
