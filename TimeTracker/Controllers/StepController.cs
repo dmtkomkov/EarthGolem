@@ -13,8 +13,8 @@ namespace TimeTracker.Controllers;
 public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> userManager) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll() {
-        var steps = await stepRepo.GetAllAsync();
+    public async Task<IActionResult> GetAll([FromQuery] DateOnly? date) {
+        var steps = await stepRepo.GetAllAsync(date);
 
         var stepDtos = steps.Select(s => s.ToDto());
 

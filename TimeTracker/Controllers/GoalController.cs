@@ -11,8 +11,8 @@ namespace TimeTracker.Controllers;
 [Authorize]
 public class GoalController(IGoalRepository goalRepo) : ControllerBase {
     [HttpGet]
-    public async Task<IActionResult> GetAll() {
-        var goals = await goalRepo.GetAllAsync();
+    public async Task<IActionResult> GetAll([FromQuery] string? project) {
+        var goals = await goalRepo.GetAllAsync(project);
 
         var goalDtos = goals.Select(c => c.ToDto());
 

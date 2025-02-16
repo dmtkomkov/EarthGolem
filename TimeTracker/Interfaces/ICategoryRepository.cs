@@ -4,7 +4,7 @@ using TimeTracker.Models;
 namespace TimeTracker.Interfaces;
 
 public interface ICategoryRepository {
-    Task<List<Category>> GetAllAsync();
+    Task<List<Category>> GetAllAsync(string? areaFilter);
     Task<List<CategoryGroup>> GetAllGroupedByAreaAsync();
     Task<Category?> GetByIdAsync(int id);
     Task<Category?> CreateAsync(CreateCategoryDto categoryDto);

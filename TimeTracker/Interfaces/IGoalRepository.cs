@@ -5,7 +5,7 @@ using TimeTracker.Models;
 namespace TimeTracker.Interfaces;
 
 public interface IGoalRepository {
-    Task<List<Goal>> GetAllAsync();
+    Task<List<Goal>> GetAllAsync(string? projectFilter);
     Task<List<GoalGroup>> GetAllGroupedByProjectAsync();
     Task<Goal?> GetByIdAsync(int id);
     Task<Goal?> CreateAsync(CreateGoalDto goalDto);

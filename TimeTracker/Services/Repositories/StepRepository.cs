@@ -9,15 +9,21 @@ namespace TimeTracker.Services.Repositories;
 
 public class StepRepository(ApplicationDbContext context) : IStepRepository
 {
-    public async Task<List<Step>> GetAllAsync()
-    {
-        return await context.Steps
+    public async Task<List<Step>> GetAllAsync(DateOnly? dateFilter) {
+        IQueryable<Step> query = context.Steps
             .AsNoTracking()
             .Include(s => s.User)
             .Include(s => s.Category)
                 .ThenInclude(c => c.Area)
             .Include(s => s.Goal)
-                .ThenInclude(g => g.Project)
+                .ThenInclude(g => g.Project);
+
+        if (dateFilter.HasValue) {
+            query = query.Where(s => s.CompletedOn == dateFilter.Value);
+        }
+
+        return await query
+            .OrderByDescending(s => s.Id)
             .ToListAsync();
     }
     

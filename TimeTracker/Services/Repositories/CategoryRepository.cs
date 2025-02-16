@@ -8,9 +8,16 @@ using TimeTracker.Models;
 namespace TimeTracker.Services.Repositories;
 
 public class CategoryRepository(ApplicationDbContext context) : ICategoryRepository {
-    public async Task<List<Category>> GetAllAsync() {
-        return await context.Categories
-            .Include(c => c.Area)
+    public async Task<List<Category>> GetAllAsync(string? areaFilter) {
+        IQueryable<Category> query = context.Categories
+            .Include(c => c.Area);
+
+        if (!string.IsNullOrWhiteSpace(areaFilter)) {
+            query = query.Where(c => c.Area!.Name == areaFilter);
+        }
+
+        return await query
+            .OrderByDescending(c => c.Id)
             .ToListAsync();
     }
     

@@ -8,9 +8,20 @@ using TimeTracker.Models;
 namespace TimeTracker.Services.Repositories;
 
 public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
-    public async Task<List<Goal>> GetAllAsync() {
-        return await context.Goals
-            .Include(g => g.Project)
+    public async Task<List<Goal>> GetAllAsync(string? projectFilter) {
+        IQueryable<Goal> query = context.Goals
+            .Include(g => g.Project);
+
+        if (!string.IsNullOrWhiteSpace(projectFilter)) {
+            if (projectFilter.Equals("null", StringComparison.OrdinalIgnoreCase)) {
+                query = query.Where(g => g.Project == null);
+            } else {
+                query = query.Where(g => g.Project != null && g.Project.Name == projectFilter);
+            }
+        }
+
+        return await query
+            .OrderByDescending(g => g.Id)
             .ToListAsync();
     }
 

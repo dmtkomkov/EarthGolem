@@ -11,8 +11,8 @@ namespace TimeTracker.Controllers;
 [Authorize]
 public class CategoryController(ICategoryRepository categoryRepo) : ControllerBase {
     [HttpGet]
-    public async Task<IActionResult> GetAll() {
-        var categories = await categoryRepo.GetAllAsync();
+    public async Task<IActionResult> GetAll([FromQuery] string? area) {
+        var categories = await categoryRepo.GetAllAsync(area);
 
         var categoryDtos = categories.Select(c => c.ToDto());
 
