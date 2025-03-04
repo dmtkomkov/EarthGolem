@@ -18,4 +18,16 @@ public class UserController(UserManager<IdentityUser> userManager) : ControllerB
         var userDtos = users.Select(u => u.ToDto());
         return Ok(userDtos);
     }
+    
+    [HttpGet("me")]
+    public async Task<ActionResult> GetCurrentUserAsync()
+    {
+        var user = await userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
+        
+        return Ok(user.ToDto());
+    }
 }
