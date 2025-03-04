@@ -23,12 +23,12 @@ public static class StepMapper {
         };
     }
 
-    public static Step ToModel(this CreateStepDto stepDto, string userId) {
+    public static Step ToModel(this CreateStepDto stepDto) {
         return new Step() {
             Duration = stepDto.Duration,
             CompletedOn = stepDto.CompletedOn,
             Description = stepDto.Description,
-            UserId = userId,
+            UserId = stepDto.UserId!,
             CategoryId = stepDto.CategoryId,
             GoalId = stepDto.GoalId,
         };

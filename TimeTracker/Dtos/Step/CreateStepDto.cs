@@ -2,8 +2,8 @@
 
 namespace TimeTracker.Dtos.Step;
 
-public class CreateStepDto
-{
+public class CreateStepDto {
+    public string? UserId { get; set; }
     [Required]
     public int Duration { get; set; }
     [Required]

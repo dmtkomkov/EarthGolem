@@ -70,9 +70,9 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
-    public async Task<Step?> CreateAsync(CreateStepDto stepDto, string userId)
+    public async Task<Step?> CreateAsync(CreateStepDto stepDto)
     {
-        var stepModel = stepDto.ToModel(userId);
+        var stepModel = stepDto.ToModel();
         await context.Steps.AddAsync(stepModel);
         await context.SaveChangesAsync();
         return await context.Steps
