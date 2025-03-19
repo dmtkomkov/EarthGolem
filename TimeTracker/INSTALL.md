@@ -96,7 +96,7 @@ _dotnet ef database update_
 
 ### Create admin
 
-_dotnet create-user --name admin --password some#password_
+_dotnet run create-user --name admin --password some#password_
 
 ### Build and publish project
 
