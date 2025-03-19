@@ -1,7 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api", "api\api.csproj", "{11564FDF-1FED-4D97-AE14-C3406CF3EFC3}"
-EndProject
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeTracker", "TimeTracker\TimeTracker.csproj", "{30421A5B-1654-4D18-9632-E4289E48FE29}"
 EndProject
 Global
