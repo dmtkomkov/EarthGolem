@@ -113,7 +113,7 @@ if (app.Environment.IsDevelopment())
 }
 else if (app.Environment.IsProduction()) {
     app.UseOpenApi(configure =>
-        configure.PostProcess = (document, _) => document.Schemes = new[] { NSwag.OpenApiSchema.Https }
+        configure.PostProcess = (document, _) => document.Schemes = [NSwag.OpenApiSchema.Https]
     );
 }
 

@@ -7,7 +7,7 @@ public static class UserMapper {
     public static UserDto ToDto(this IdentityUser userModel) {
         return new UserDto() {
             UserId = userModel.Id,
-            UserName = userModel.UserName,
+            UserName = userModel.UserName
         };
     }
 }
