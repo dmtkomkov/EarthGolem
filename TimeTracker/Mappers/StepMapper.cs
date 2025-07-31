@@ -16,6 +16,8 @@ public static class StepMapper {
             Id = stepModel.Id,
             Duration = stepModel.Duration,
             CompletedOn = stepModel.CompletedOn,
+            UpdatedOn = stepModel.UpdatedOn,
+            IsDeleted = stepModel.IsDeleted,
             Description = stepModel.Description,
             User = stepModel.User!.ToDto(),
             Category = stepModel.Category!.ToDto(),

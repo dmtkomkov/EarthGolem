@@ -12,6 +12,8 @@ public class StepDto
     public int Duration { get; set; }
     [Required]
     public DateOnly CompletedOn { get; set; }
+    public DateOnly UpdatedOn { get; set; }
+    public bool IsDeleted { get; set; }
     [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
     public string Description { get; set; } = string.Empty;
     public required UserDto User { get; set; }

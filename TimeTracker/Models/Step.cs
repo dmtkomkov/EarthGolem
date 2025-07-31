@@ -7,6 +7,8 @@ public class Step {
     public int Id { get; set; }
     public int Duration { get; set; }
     public DateOnly CompletedOn { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    public DateOnly UpdatedOn { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    public bool IsDeleted { get; set; } = false;
     [MaxLength(500)]
     public string Description { get; set; } = string.Empty;
     [Required]
