@@ -40,6 +40,6 @@ public static class StepMapper {
         stepModel.Description = stepDto.Description;
         stepModel.UserId = stepDto.UserId;
         stepModel.CategoryId = stepDto.CategoryId;
-        stepModel.GoalId = stepModel.GoalId;
+        stepModel.GoalId = stepDto.GoalId;
     }
 }
