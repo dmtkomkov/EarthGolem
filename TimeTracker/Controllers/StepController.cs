@@ -74,6 +74,17 @@ public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> 
         return Ok(stepModel.ToDto());
     }
     
+    [HttpPut("toggle/{id:int}")]
+    public async Task<IActionResult> Toggle([FromRoute] int id) {
+        var stepModel = await stepRepo.ToggleAsync(id);
+
+        if (stepModel == null) {
+            return NotFound();
+        }
+        
+        return Ok(stepModel.ToDto());
+    }
+    
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id) {
         var stepModel = await stepRepo.DeleteAsync(id);

@@ -38,7 +38,7 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
         if (distinctDates.Count == 0)
             return [];
         
-        var grouped = await context.Steps
+        return await context.Steps
             .AsNoTracking()
             .Include(s => s.User)
             .Include(s => s.Category)
@@ -53,8 +53,6 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
             })
             .OrderByDescending(g => g.CompletedOn)
             .ToListAsync();
-
-        return grouped;
     }
 
 
@@ -75,6 +73,7 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
         var stepModel = stepDto.ToModel();
         await context.Steps.AddAsync(stepModel);
         await context.SaveChangesAsync();
+
         return await context.Steps
             .AsNoTracking()
             .Include(s => s.User)
@@ -95,6 +94,28 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
 
         stepModel.UpdateModelFromDto(stepDto);
         await context.SaveChangesAsync();
+
+        return await context.Steps
+            .AsNoTracking()
+            .Include(s => s.User)
+            .Include(s => s.Category)
+                .ThenInclude(c => c.Area)
+            .Include(s => s.Goal)
+                .ThenInclude(g => g.Project)
+            .FirstOrDefaultAsync(s => s.Id == stepModel.Id);
+    }
+
+    public async Task<Step?> ToggleAsync(int id)
+    {
+        var stepModel = await context.Steps.FindAsync(id);
+        
+        if (stepModel == null) {
+            return null;
+        }
+        
+        stepModel.ToggleModelFromDto();
+        await context.SaveChangesAsync();
+        
         return await context.Steps
             .AsNoTracking()
             .Include(s => s.User)
@@ -115,6 +136,7 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository
 
         context.Steps.Remove(stepModel);
         await context.SaveChangesAsync();
+
         return stepModel;
     }
 

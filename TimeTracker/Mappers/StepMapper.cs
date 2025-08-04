@@ -44,4 +44,8 @@ public static class StepMapper {
         stepModel.CategoryId = stepDto.CategoryId;
         stepModel.GoalId = stepDto.GoalId;
     }
+
+    public static void ToggleModelFromDto(this Step stepModel) {
+        stepModel.IsDeleted = !stepModel.IsDeleted;
+    }
 }
