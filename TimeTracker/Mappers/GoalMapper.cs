@@ -33,6 +33,7 @@ public static class GoalMapper {
             CloseDate = goalModel.StartDate,
             ProjectId = goalModel.ProjectId,
             Project = goalModel.Project?.ToFlatDto(),
+            StepCount = goalModel.StepCount,
         };
     }
     

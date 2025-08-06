@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 
 namespace TimeTracker.Models;
@@ -14,4 +15,8 @@ public class Goal {
     public DateOnly? CloseDate { get; set; }
     public int? ProjectId { get; set; }
     public Project? Project { get; set; }
+    public List<Step> Steps { get; set; } = [];
+    
+    [NotMapped]
+    public int StepCount => Steps?.Count ?? 0;
 }
