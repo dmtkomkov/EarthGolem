@@ -11,6 +11,6 @@ public class CreateCategoryDto {
     [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
     public string Description { get; set; } = string.Empty;
 
-    [Required] public int AreaId { get; set; }
+    public int AreaId { get; set; }
     public CreateAreaDto? Area { get; set; }
 }
