@@ -54,10 +54,29 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
     }
 
     public async Task<Goal?> CreateAsync(CreateGoalDto goalDto) {
-        var goalModel = goalDto.ToModel();
-        await context.Goals.AddAsync(goalModel);
-        await context.SaveChangesAsync();
-        return goalModel;
+        await using var transaction = await context.Database.BeginTransactionAsync();
+
+        try {
+            if (goalDto.Project is not null) {
+                var projectModel = goalDto.Project.ToModel();
+                await context.Projects.AddAsync(projectModel);
+                await context.SaveChangesAsync();
+                // Set project id in goal
+                goalDto.ProjectId = projectModel.Id;
+            }
+
+            var goalModel = goalDto.ToModel();
+            await context.Goals.AddAsync(goalModel);
+            await context.SaveChangesAsync();
+            
+            await transaction.CommitAsync();
+
+            return goalModel;
+        }
+        catch (Exception ex) {
+            await transaction.RollbackAsync();
+            return null;
+        }
     }
 
     public async Task<Goal?> UpdateAsync(int id, UpdateGoalDto goalDto) {
