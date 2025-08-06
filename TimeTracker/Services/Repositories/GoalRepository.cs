@@ -94,15 +94,41 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
     }
 
     public async Task<Goal?> DeleteAsync(int id) {
-        var goalModel = await context.Goals.FindAsync(id);
+        await using var transaction = await context.Database.BeginTransactionAsync();
 
-        if (goalModel == null) {
-            return null;
+        try {
+            var goalModel = await context.Goals
+                .Include(g => g.Project)
+                .FirstOrDefaultAsync(g => g.Id == id);
+
+            if (goalModel == null) {
+                return null;
+            }
+
+            var project = goalModel.Project;
+            
+            context.Goals.Remove(goalModel);
+            await context.SaveChangesAsync();
+            
+            if (project != null)
+            {
+                var hasOtherGoals = await context.Goals.AnyAsync(g => g.ProjectId == project.Id);
+
+                if (!hasOtherGoals)
+                {
+                    context.Projects.Remove(project);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            await transaction.CommitAsync();
+            
+            return goalModel;
         }
-
-        context.Goals.Remove(goalModel);
-        await context.SaveChangesAsync();
-        return goalModel;
+        catch (Exception ex) {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async  Task<bool> GoalExists(int id) {
