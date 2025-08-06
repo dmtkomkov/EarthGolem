@@ -8,8 +8,7 @@ using TimeTracker.Models;
 namespace TimeTracker.Services.Repositories;
 
 public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
-    public async Task<List<Goal>> GetAllAsync(string? projectFilter)
-    {
+    public async Task<List<Goal>> GetAllAsync(string? projectFilter) {
         IQueryable<Goal> query = context.Goals
             .Include(g => g.Project)
             .Include(g => g.Steps);
@@ -17,7 +16,8 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
         if (!string.IsNullOrWhiteSpace(projectFilter)) {
             if (projectFilter.Equals("null", StringComparison.OrdinalIgnoreCase)) {
                 query = query.Where(g => g.Project == null);
-            } else {
+            }
+            else {
                 query = query.Where(g => g.Project != null && g.Project.Name == projectFilter);
             }
         }
@@ -33,7 +33,7 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
             .OrderByDescending(p => p.Id)
             .Select(p => p.Name)
             .ToListAsync();
-        
+
         var groupedGoals = await context.Goals
             .AsNoTracking()
             .Include(g => g.Project)
@@ -48,7 +48,7 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
 
         return groupedGoals;
     }
-    
+
     public async Task<Goal?> GetByIdAsync(int id) {
         return await context.Goals
             .Include(g => g.Project)
@@ -70,7 +70,7 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
             var goalModel = goalDto.ToModel();
             await context.Goals.AddAsync(goalModel);
             await context.SaveChangesAsync();
-            
+
             await transaction.CommitAsync();
 
             return goalModel;
@@ -83,7 +83,7 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
 
     public async Task<Goal?> UpdateAsync(int id, UpdateGoalDto goalDto) {
         var goalModel = await context.Goals.FindAsync(id);
-        
+
         if (goalModel == null) {
             return null;
         }
@@ -106,23 +106,21 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
             }
 
             var project = goalModel.Project;
-            
+
             context.Goals.Remove(goalModel);
             await context.SaveChangesAsync();
-            
-            if (project != null)
-            {
+
+            if (project != null) {
                 var hasOtherGoals = await context.Goals.AnyAsync(g => g.ProjectId == project.Id);
 
-                if (!hasOtherGoals)
-                {
+                if (!hasOtherGoals) {
                     context.Projects.Remove(project);
                     await context.SaveChangesAsync();
                 }
             }
 
             await transaction.CommitAsync();
-            
+
             return goalModel;
         }
         catch (Exception ex) {
@@ -131,7 +129,7 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
         }
     }
 
-    public async  Task<bool> GoalExists(int id) {
+    public async Task<bool> GoalExists(int id) {
         return await context.Goals.AnyAsync(a => a.Id == id);
     }
 }

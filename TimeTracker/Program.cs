@@ -25,8 +25,7 @@ var tokenValidationParameters = new TokenValidationParameters {
     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!)),
     ClockSkew = TimeSpan.Zero
 };
-var openApiSecurityScheme = new NSwag.OpenApiSecurityScheme
-{
+var openApiSecurityScheme = new NSwag.OpenApiSecurityScheme {
     Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
     Name = "Authorization",
     In = NSwag.OpenApiSecurityApiKeyLocation.Header,
@@ -46,8 +45,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options => {
     options.SerializerSettings.Converters.Add(new ColorJsonConverter());
 });
 
-builder.Services.AddCors(options =>
-{
+builder.Services.AddCors(options => {
     options.AddPolicy("StoneGolemLocal", policy => {
         policy.WithOrigins(corsSettings.GetSection("AllowedOrigins").Get<string[]>()!)
             .AllowAnyHeader()
@@ -56,8 +54,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddOpenApiDocument(config =>
-{
+builder.Services.AddOpenApiDocument(config => {
     config.Title = "TimeTracker API";
     config.AddSecurity(bearer, openApiSecurityScheme);
     config.OperationProcessors.Add(
@@ -97,8 +94,7 @@ var app = builder.Build();
 
 //===================================================================================================================//
 
-if (args.Length > 0 && args[0] == "create-user")
-{
+if (args.Length > 0 && args[0] == "create-user") {
     await UserCreator.CreateUserAsync(app.Services, args);
     return;
 }
@@ -107,8 +103,7 @@ if (args.Length > 0 && args[0] == "create-user")
 
 app.UseCors("StoneGolemLocal");
 
-if (app.Environment.IsDevelopment())
-{
+if (app.Environment.IsDevelopment()) {
     app.UseOpenApi();
 }
 else if (app.Environment.IsProduction()) {

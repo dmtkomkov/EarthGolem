@@ -12,6 +12,7 @@ public static class AreaMapper {
             Description = areaModel.Description,
         };
     }
+
     public static AreaDto ToDto(this Area areaModel) {
         return new AreaDto() {
             Id = areaModel.Id,

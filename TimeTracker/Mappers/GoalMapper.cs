@@ -22,7 +22,7 @@ public static class GoalMapper {
             ProjectId = goalModel.ProjectId,
         };
     }
-    
+
     public static GoalDto ToDto(this Goal goalModel) {
         return new GoalDto() {
             Id = goalModel.Id,
@@ -36,7 +36,7 @@ public static class GoalMapper {
             StepCount = goalModel.StepCount,
         };
     }
-    
+
     public static Goal ToModel(this CreateGoalDto goalDto) {
         return new Goal() {
             Name = goalDto.Name,

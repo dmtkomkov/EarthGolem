@@ -7,18 +7,17 @@ using TimeTracker.Interfaces;
 namespace TimeTracker.Services;
 
 public class TokenService(
-        ILogger<TokenService> logger,
-        IConfiguration configuration
-    ) : ITokenService {
-    
+    ILogger<TokenService> logger,
+    IConfiguration configuration
+) : ITokenService {
     private readonly SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
-    
+
     public string GenerateJwtToken(string userId, DateTime expires) {
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var claims = new List<Claim> {
-            new (JwtRegisteredClaimNames.Sub, userId)
+            new(JwtRegisteredClaimNames.Sub, userId)
         };
-        
+
         var token = new JwtSecurityToken(
             claims: claims,
             notBefore: DateTime.UtcNow,
@@ -46,19 +45,24 @@ public class TokenService(
             jwtToken = validatedToken as JwtSecurityToken;
 
             return true;
-        } catch (SecurityTokenExpiredException) {
+        }
+        catch (SecurityTokenExpiredException) {
             logger.LogError("The token has expired");
             return false;
-        } catch (SecurityTokenInvalidSignatureException) {
+        }
+        catch (SecurityTokenInvalidSignatureException) {
             logger.LogError("The token signature is invalid");
             return false;
-        } catch (SecurityTokenException) {
+        }
+        catch (SecurityTokenException) {
             logger.LogError("There was an error with the token");
             return false;
-        } catch (ArgumentException) {
+        }
+        catch (ArgumentException) {
             logger.LogError("The token format is invalid");
             return false;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             logger.LogError("An unknown error occurred: {ExMessage}", ex.Message);
             return false;
         }

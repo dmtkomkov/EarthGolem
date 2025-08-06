@@ -20,7 +20,7 @@ public static class CategoryMapper {
             AreaId = categoryModel.AreaId,
         };
     }
-    
+
     public static CategoryDto ToDto(this Category categoryModel) {
         return new CategoryDto() {
             Id = categoryModel.Id,
@@ -28,10 +28,11 @@ public static class CategoryMapper {
             Color = categoryModel.Color,
             Description = categoryModel.Description,
             AreaId = categoryModel.AreaId,
-            Area = categoryModel.Area!.ToFlatDto()
+            Area = categoryModel.Area!.ToFlatDto(),
+            StepCount = categoryModel.StepCount,
         };
     }
-    
+
     public static Category ToModel(this CreateCategoryDto categoryDto) {
         return new Category() {
             Name = categoryDto.Name,

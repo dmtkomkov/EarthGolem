@@ -18,7 +18,7 @@ public class CategoryController(ICategoryRepository categoryRepo) : ControllerBa
 
         return Ok(categoryDtos);
     }
-    
+
     [HttpGet("group")]
     public async Task<IActionResult> GetAllGroupedByArea() {
         var categoryGroups = await categoryRepo.GetAllGroupedByAreaAsync();
@@ -27,7 +27,7 @@ public class CategoryController(ICategoryRepository categoryRepo) : ControllerBa
 
         return Ok(categoryGroupDtos);
     }
-    
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id) {
         var categoryModel = await categoryRepo.GetByIdAsync(id);
@@ -38,7 +38,7 @@ public class CategoryController(ICategoryRepository categoryRepo) : ControllerBa
 
         return Ok(categoryModel.ToDto());
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCategoryDto categoryDto) {
         var categoryModel = await categoryRepo.CreateAsync(categoryDto);
@@ -46,10 +46,10 @@ public class CategoryController(ICategoryRepository categoryRepo) : ControllerBa
         if (categoryModel == null) {
             return NotFound();
         }
-        
+
         return Created(string.Empty, categoryModel.ToFlatDto());
     }
-    
+
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCategoryDto categoryDto) {
         var categoryModel = await categoryRepo.UpdateAsync(id, categoryDto);
@@ -57,14 +57,14 @@ public class CategoryController(ICategoryRepository categoryRepo) : ControllerBa
         if (categoryModel == null) {
             return NotFound();
         }
-        
+
         return Ok(categoryModel.ToFlatDto());
     }
-    
+
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id) {
         var categoryModel = await categoryRepo.DeleteAsync(id);
-        
+
         if (categoryModel == null) {
             return NotFound();
         }

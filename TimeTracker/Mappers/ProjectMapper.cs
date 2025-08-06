@@ -28,7 +28,7 @@ public static class ProjectMapper {
             Goals = projectModel.Goals.Select(g => g.ToFlatDto()).ToList(),
         };
     }
-    
+
     public static Project ToModel(this CreateProjectDto projectDto) {
         return new Project() {
             Name = projectDto.Name,

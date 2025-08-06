@@ -4,4 +4,5 @@ namespace TimeTracker.Dtos.Category;
 
 public class CategoryDto : CategoryFlatDto {
     public AreaFlatDto Area { get; set; }
+    public int StepCount { get; set; }
 }

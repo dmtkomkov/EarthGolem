@@ -18,7 +18,7 @@ public class GoalController(IGoalRepository goalRepo) : ControllerBase {
 
         return Ok(goalDtos);
     }
-    
+
     [HttpGet("group")]
     public async Task<IActionResult> GetAllGroupedByProject() {
         var goalGroups = await goalRepo.GetAllGroupedByProjectAsync();
@@ -27,7 +27,7 @@ public class GoalController(IGoalRepository goalRepo) : ControllerBase {
 
         return Ok(goalGroupDtos);
     }
-    
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id) {
         var goalModel = await goalRepo.GetByIdAsync(id);
@@ -38,7 +38,7 @@ public class GoalController(IGoalRepository goalRepo) : ControllerBase {
 
         return Ok(goalModel.ToDto());
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateGoalDto goalDto) {
         var goalModel = await goalRepo.CreateAsync(goalDto);
@@ -46,10 +46,10 @@ public class GoalController(IGoalRepository goalRepo) : ControllerBase {
         if (goalModel == null) {
             return NotFound();
         }
-        
+
         return Created(string.Empty, goalModel.ToFlatDto());
     }
-    
+
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateGoalDto goalDto) {
         var goalModel = await goalRepo.UpdateAsync(id, goalDto);
@@ -57,14 +57,14 @@ public class GoalController(IGoalRepository goalRepo) : ControllerBase {
         if (goalModel == null) {
             return NotFound();
         }
-        
+
         return Ok(goalModel.ToFlatDto());
     }
-    
+
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id) {
         var goalModel = await goalRepo.DeleteAsync(id);
-        
+
         if (goalModel == null) {
             return NotFound();
         }

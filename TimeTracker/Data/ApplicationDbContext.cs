@@ -7,16 +7,14 @@ using TimeTracker.Models;
 
 namespace TimeTracker.Data;
 
-public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext(options)
-{
+public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext(options) {
     public DbSet<Step> Steps { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Area> Areas { get; set; }
     public DbSet<Goal> Goals { get; set; }
     public DbSet<Project> Projects { get; set; }
-    
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
 
         // Add a ValueConverter for the Color property
@@ -25,14 +23,12 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext(
             v => ColorTranslator.FromHtml(v)
         );
 
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-        {
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes()) {
             var colorProperty = entityType.ClrType
                 .GetProperties()
                 .FirstOrDefault(p => p.PropertyType == typeof(Color));
 
-            if (colorProperty != null)
-            {
+            if (colorProperty != null) {
                 modelBuilder.Entity(entityType.ClrType)
                     .Property(colorProperty.Name)
                     .HasConversion(colorConverter);

@@ -7,6 +7,5 @@ using TimeTracker.Models;
 namespace TimeTracker.Dtos.Project;
 
 public class ProjectDto : ProjectFlatDto {
-    [Required]
-    public List<GoalFlatDto> Goals { get; set; } = [];
+    [Required] public List<GoalFlatDto> Goals { get; set; } = [];
 }

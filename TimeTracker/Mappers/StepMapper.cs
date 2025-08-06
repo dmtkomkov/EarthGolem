@@ -10,7 +10,7 @@ public static class StepMapper {
             Steps = stepGroup.Steps.Select(s => s.ToDto()).ToList(),
         };
     }
-    
+
     public static StepDto ToDto(this Step stepModel) {
         return new StepDto() {
             Id = stepModel.Id,
@@ -35,7 +35,7 @@ public static class StepMapper {
             GoalId = stepDto.GoalId,
         };
     }
-    
+
     public static void UpdateModelFromDto(this Step stepModel, UpdateStepDto stepDto) {
         stepModel.Duration = stepDto.Duration;
         stepModel.CompletedOn = stepDto.CompletedOn;

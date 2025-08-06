@@ -18,7 +18,7 @@ public class AreaController(IAreaRepository areaRepo) : ControllerBase {
 
         return Ok(areaDtos);
     }
-    
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id) {
         var areaModel = await areaRepo.GetByIdAsync(id);
@@ -29,14 +29,14 @@ public class AreaController(IAreaRepository areaRepo) : ControllerBase {
 
         return Ok(areaModel.ToDto());
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateAreaDto areaDto) {
         var areaModel = await areaRepo.CreateAsync(areaDto);
-        
+
         return Created(string.Empty, areaModel.ToFlatDto());
     }
-    
+
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateAreaDto areaDto) {
         var areaModel = await areaRepo.UpdateAsync(id, areaDto);
@@ -44,14 +44,14 @@ public class AreaController(IAreaRepository areaRepo) : ControllerBase {
         if (areaModel == null) {
             return NotFound();
         }
-        
+
         return Ok(areaModel.ToFlatDto());
     }
-    
+
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id) {
         var areaModel = await areaRepo.DeleteAsync(id);
-        
+
         if (areaModel == null) {
             return NotFound();
         }
