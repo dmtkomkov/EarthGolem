@@ -15,7 +15,6 @@ public static class GoalMapper {
         return new GoalFlatDto() {
             Id = goalModel.Id,
             Name = goalModel.Name,
-            Color = goalModel.Color,
             Description = goalModel.Description,
             StartDate = goalModel.StartDate,
             CloseDate = goalModel.StartDate,
@@ -27,7 +26,6 @@ public static class GoalMapper {
         return new GoalDto() {
             Id = goalModel.Id,
             Name = goalModel.Name,
-            Color = goalModel.Color,
             Description = goalModel.Description,
             StartDate = goalModel.StartDate,
             CloseDate = goalModel.StartDate,
@@ -40,7 +38,6 @@ public static class GoalMapper {
     public static Goal ToModel(this CreateGoalDto goalDto) {
         return new Goal() {
             Name = goalDto.Name,
-            Color = goalDto.Color,
             Description = goalDto.Description,
             ProjectId = goalDto.ProjectId,
         };
@@ -48,7 +45,6 @@ public static class GoalMapper {
 
     public static void UpdateModelFromDto(this Goal goalModel, UpdateGoalDto goalDto) {
         goalModel.Name = goalDto.Name;
-        goalModel.Color = goalDto.Color;
         goalModel.Description = goalDto.Description;
         goalModel.ProjectId = goalDto.ProjectId;
     }
