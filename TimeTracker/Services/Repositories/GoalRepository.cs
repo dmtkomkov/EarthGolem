@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Dtos.Goal;
+using TimeTracker.Enums;
 using TimeTracker.Interfaces;
 using TimeTracker.Mappers;
 using TimeTracker.Models;
@@ -91,19 +92,19 @@ public class GoalRepository(ApplicationDbContext context, IProjectRepository pro
         }
 
         await using var transaction = await context.Database.BeginTransactionAsync();
-        
+
         try {
             goalModel.UpdateModelFromDto(goalDto);
             await context.SaveChangesAsync();
             await projectRepository.UpdateDatesAsync(goalModel.ProjectId);
-            
+
             await transaction.CommitAsync();
         }
         catch {
             await transaction.RollbackAsync();
             throw;
         }
-        
+
         return goalModel;
     }
 
@@ -146,16 +147,29 @@ public class GoalRepository(ApplicationDbContext context, IProjectRepository pro
         }
     }
 
+    public async Task<Goal?> ToggleAsync(int id) {
+        var goalModel = await context.Goals.FindAsync(id);
+
+        if (goalModel == null) {
+            return null;
+        }
+
+        goalModel.Status = goalModel.Status == GoalStatus.Open ? GoalStatus.Closed : GoalStatus.Open;
+        await context.SaveChangesAsync();
+
+        return goalModel;
+    }
+
     public async Task<bool> GoalExists(int id) {
         return await context.Goals.AnyAsync(a => a.Id == id);
     }
-    
+
     public async Task UpdateDatesAsync(int? id) {
         if (!id.HasValue) return;
 
         var goalModel = await context.Goals.FindAsync(id.Value);
         if (goalModel == null) return;
-        
+
         var relatedSteps = await context.Steps
             .Where(s => s.GoalId == id && !s.IsDeleted)
             .ToListAsync();
@@ -163,11 +177,12 @@ public class GoalRepository(ApplicationDbContext context, IProjectRepository pro
         if (relatedSteps.Count != 0) {
             goalModel.StartDate = relatedSteps.Min(s => s.CompletedOn);
             goalModel.EndDate = relatedSteps.Max(s => s.CompletedOn);
-        } else {
+        }
+        else {
             goalModel.StartDate = null;
             goalModel.EndDate = null;
         }
-        
+
         await projectRepository.UpdateDatesAsync(goalModel.ProjectId);
 
         await context.SaveChangesAsync();

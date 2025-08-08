@@ -45,9 +45,4 @@ public static class StepMapper {
         stepModel.GoalId = stepDto.GoalId;
         stepModel.UpdatedOn = DateOnly.FromDateTime(DateTime.Today);
     }
-
-    public static void ToggleModelFromDto(this Step stepModel) {
-        stepModel.IsDeleted = !stepModel.IsDeleted;
-        stepModel.UpdatedOn = DateOnly.FromDateTime(DateTime.Today);
-    }
 }

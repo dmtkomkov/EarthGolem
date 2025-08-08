@@ -10,6 +10,7 @@ public interface IGoalRepository {
     Task<Goal?> GetByIdAsync(int id);
     Task<Goal?> CreateAsync(CreateGoalDto goalDto);
     Task<Goal?> UpdateAsync(int id, UpdateGoalDto goalDto);
+    Task<Goal?> ToggleAsync(int id);
     Task<Goal?> DeleteAsync(int id);
     Task<bool> GoalExists(int id);
     Task UpdateDatesAsync(int? id);

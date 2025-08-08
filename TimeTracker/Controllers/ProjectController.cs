@@ -48,6 +48,17 @@ public class ProjectController(IProjectRepository projectRepo) : ControllerBase 
         return Ok(projectModel.ToDto());
     }
 
+    [HttpPut("toggle/{id:int}")]
+    public async Task<IActionResult> Toggle([FromRoute] int id) {
+        var projectModel = await projectRepo.ToggleAsync(id);
+
+        if (projectModel == null) {
+            return NotFound();
+        }
+
+        return Ok(projectModel.ToDto());
+    }
+
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id) {
         var projectModel = await projectRepo.DeleteAsync(id);

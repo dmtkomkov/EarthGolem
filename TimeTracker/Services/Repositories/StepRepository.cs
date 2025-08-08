@@ -68,14 +68,14 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
 
     public async Task<Step?> CreateAsync(CreateStepDto stepDto) {
         var stepModel = stepDto.ToModel();
-        
+
         await using var transaction = await context.Database.BeginTransactionAsync();
-        
-        try {      
+
+        try {
             await context.Steps.AddAsync(stepModel);
             await context.SaveChangesAsync();
             await goalRepository.UpdateDatesAsync(stepModel.GoalId);
-            
+
             await transaction.CommitAsync();
         }
         catch {
@@ -101,12 +101,12 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
         }
 
         await using var transaction = await context.Database.BeginTransactionAsync();
-        
+
         try {
             stepModel.UpdateModelFromDto(stepDto);
             await context.SaveChangesAsync();
             await goalRepository.UpdateDatesAsync(stepModel.GoalId);
-            
+
             await transaction.CommitAsync();
         }
         catch {
@@ -132,12 +132,13 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
         }
 
         await using var transaction = await context.Database.BeginTransactionAsync();
-        
+
         try {
-            stepModel.ToggleModelFromDto();
+            stepModel.IsDeleted = !stepModel.IsDeleted;
+            stepModel.UpdatedOn = DateOnly.FromDateTime(DateTime.Today);
             await context.SaveChangesAsync();
             await goalRepository.UpdateDatesAsync(stepModel.GoalId);
-            
+
             await transaction.CommitAsync();
         }
         catch {
@@ -145,14 +146,7 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
             throw;
         }
 
-        return await context.Steps
-            .AsNoTracking()
-            .Include(s => s.User)
-            .Include(s => s.Category)
-            .ThenInclude(c => c.Area)
-            .Include(s => s.Goal)
-            .ThenInclude(g => g.Project)
-            .FirstOrDefaultAsync(s => s.Id == stepModel.Id);
+        return stepModel;
     }
 
     public async Task<Step?> DeleteAsync(int id) {
@@ -163,12 +157,12 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
         }
 
         await using var transaction = await context.Database.BeginTransactionAsync();
-        
+
         try {
             context.Steps.Remove(stepModel);
             await context.SaveChangesAsync();
             await goalRepository.UpdateDatesAsync(stepModel.GoalId);
-            
+
             await transaction.CommitAsync();
         }
         catch {

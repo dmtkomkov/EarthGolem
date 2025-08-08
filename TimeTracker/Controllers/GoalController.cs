@@ -61,6 +61,17 @@ public class GoalController(IGoalRepository goalRepo) : ControllerBase {
         return Ok(goalModel.ToFlatDto());
     }
 
+    [HttpPut("toggle/{id:int}")]
+    public async Task<IActionResult> Toggle([FromRoute] int id) {
+        var goalModel = await goalRepo.ToggleAsync(id);
+
+        if (goalModel == null) {
+            return NotFound();
+        }
+
+        return Ok(goalModel.ToDto());
+    }
+
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id) {
         var goalModel = await goalRepo.DeleteAsync(id);
