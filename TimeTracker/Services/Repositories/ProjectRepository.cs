@@ -54,4 +54,25 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
     public async Task<bool> ProjectExists(int id) {
         return await context.Projects.AnyAsync(a => a.Id == id);
     }
+    
+    public async Task UpdateDatesAsync(int? id) {
+        if (!id.HasValue) return;
+
+        var project = await context.Projects.FindAsync(id.Value);
+        if (project == null) return;
+        
+        var relatedGoals = await context.Goals
+            .Where(s => s.ProjectId == id)
+            .ToListAsync();
+
+        if (relatedGoals.Count != 0) {
+            project.StartDate = relatedGoals.Min(s => s.StartDate);
+            project.EndDate = relatedGoals.Max(s => s.EndDate);
+        } else {
+            project.StartDate = null;
+            project.EndDate = null;
+        }
+
+        await context.SaveChangesAsync();
+    }
 }
