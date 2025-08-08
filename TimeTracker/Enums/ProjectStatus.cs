@@ -1,7 +1,11 @@
 namespace TimeTracker.Enums;
 
 public enum ProjectStatus {
-    Active,
-    Inactive,
+    Open,
+    Closed,
+}
+
+public enum GoalStatus {
+    Open,
     Closed,
 }

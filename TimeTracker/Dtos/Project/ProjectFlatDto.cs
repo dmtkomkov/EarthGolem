@@ -12,7 +12,7 @@ public class ProjectFlatDto {
     [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
     public string Description { get; set; } = string.Empty;
 
-    [Required] public ProjectStatus Status { get; set; } = ProjectStatus.Active;
+    [Required] public ProjectStatus Status { get; set; } = ProjectStatus.Open;
     public DateOnly? StartDate { get; set; }
-    public DateOnly? CloseDate { get; set; }
+    public DateOnly? EndDate { get; set; }
 }

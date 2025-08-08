@@ -11,7 +11,7 @@ public static class ProjectMapper {
             Color = projectModel.Color,
             Description = projectModel.Description,
             StartDate = projectModel.StartDate,
-            CloseDate = projectModel.CloseDate,
+            EndDate = projectModel.EndDate,
             Status = projectModel.Status,
         };
     }
@@ -23,7 +23,7 @@ public static class ProjectMapper {
             Color = projectModel.Color,
             Description = projectModel.Description,
             StartDate = projectModel.StartDate,
-            CloseDate = projectModel.CloseDate,
+            EndDate = projectModel.EndDate,
             Status = projectModel.Status,
             Goals = projectModel.Goals.Select(g => g.ToFlatDto()).ToList(),
         };
@@ -41,6 +41,5 @@ public static class ProjectMapper {
         projectModel.Name = projectDto.Name;
         projectModel.Color = projectDto.Color;
         projectModel.Description = projectDto.Description;
-        projectModel.Status = projectDto.Status;
     }
 }

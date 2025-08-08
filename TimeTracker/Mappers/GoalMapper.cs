@@ -1,4 +1,5 @@
 using TimeTracker.Dtos.Goal;
+using TimeTracker.Enums;
 using TimeTracker.Models;
 
 namespace TimeTracker.Mappers;
@@ -17,7 +18,8 @@ public static class GoalMapper {
             Name = goalModel.Name,
             Description = goalModel.Description,
             StartDate = goalModel.StartDate,
-            CloseDate = goalModel.StartDate,
+            EndDate = goalModel.EndDate,
+            Status = goalModel.Status,
             ProjectId = goalModel.ProjectId,
         };
     }
@@ -28,7 +30,8 @@ public static class GoalMapper {
             Name = goalModel.Name,
             Description = goalModel.Description,
             StartDate = goalModel.StartDate,
-            CloseDate = goalModel.StartDate,
+            EndDate = goalModel.EndDate,
+            Status = goalModel.Status,
             ProjectId = goalModel.ProjectId,
             Project = goalModel.Project?.ToFlatDto(),
             StepCount = goalModel.StepCount,

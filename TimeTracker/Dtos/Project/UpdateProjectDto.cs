@@ -10,6 +10,4 @@ public class UpdateProjectDto {
 
     [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
     public string Description { get; set; } = string.Empty;
-
-    [Required] public ProjectStatus Status { get; set; }
 }
