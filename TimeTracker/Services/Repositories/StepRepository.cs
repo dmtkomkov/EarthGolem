@@ -7,7 +7,7 @@ using TimeTracker.Models;
 
 namespace TimeTracker.Services.Repositories;
 
-public class StepRepository(ApplicationDbContext context) : IStepRepository {
+public class StepRepository(ApplicationDbContext context, IGoalRepository goalRepository) : IStepRepository {
     public async Task<List<Step>> GetAllAsync(DateOnly? dateFilter) {
         IQueryable<Step> query = context.Steps
             .AsNoTracking()
@@ -60,16 +60,28 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository {
             .AsNoTracking()
             .Include(s => s.User)
             .Include(s => s.Category)
-            .ThenInclude(c => c.Area)
+            .ThenInclude(c => c!.Area)
             .Include(s => s.Goal)
-            .ThenInclude(g => g.Project)
+            .ThenInclude(g => g!.Project)
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
     public async Task<Step?> CreateAsync(CreateStepDto stepDto) {
         var stepModel = stepDto.ToModel();
-        await context.Steps.AddAsync(stepModel);
-        await context.SaveChangesAsync();
+        
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        
+        try {      
+            await context.Steps.AddAsync(stepModel);
+            await context.SaveChangesAsync();
+            await goalRepository.UpdateDatesAsync(stepModel.GoalId);
+            
+            await transaction.CommitAsync();
+        }
+        catch {
+            await transaction.RollbackAsync();
+            throw;
+        }
 
         return await context.Steps
             .AsNoTracking()
@@ -88,8 +100,19 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository {
             return null;
         }
 
-        stepModel.UpdateModelFromDto(stepDto);
-        await context.SaveChangesAsync();
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        
+        try {
+            stepModel.UpdateModelFromDto(stepDto);
+            await context.SaveChangesAsync();
+            await goalRepository.UpdateDatesAsync(stepModel.GoalId);
+            
+            await transaction.CommitAsync();
+        }
+        catch {
+            await transaction.RollbackAsync();
+            throw;
+        }
 
         return await context.Steps
             .AsNoTracking()
@@ -108,8 +131,19 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository {
             return null;
         }
 
-        stepModel.ToggleModelFromDto();
-        await context.SaveChangesAsync();
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        
+        try {
+            stepModel.ToggleModelFromDto();
+            await context.SaveChangesAsync();
+            await goalRepository.UpdateDatesAsync(stepModel.GoalId);
+            
+            await transaction.CommitAsync();
+        }
+        catch {
+            await transaction.RollbackAsync();
+            throw;
+        }
 
         return await context.Steps
             .AsNoTracking()
@@ -128,8 +162,19 @@ public class StepRepository(ApplicationDbContext context) : IStepRepository {
             return null;
         }
 
-        context.Steps.Remove(stepModel);
-        await context.SaveChangesAsync();
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        
+        try {
+            context.Steps.Remove(stepModel);
+            await context.SaveChangesAsync();
+            await goalRepository.UpdateDatesAsync(stepModel.GoalId);
+            
+            await transaction.CommitAsync();
+        }
+        catch {
+            await transaction.RollbackAsync();
+            throw;
+        }
 
         return stepModel;
     }

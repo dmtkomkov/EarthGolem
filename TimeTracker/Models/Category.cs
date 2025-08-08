@@ -12,5 +12,5 @@ public class Category {
     public Area? Area { get; set; }
     public List<Step> Steps { get; set; } = [];
 
-    [NotMapped] public int StepCount => Steps?.Count ?? 0;
+    public int StepCount => Steps?.Count(s => !s.IsDeleted) ?? 0;
 }

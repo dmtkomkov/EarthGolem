@@ -132,4 +132,25 @@ public class GoalRepository(ApplicationDbContext context) : IGoalRepository {
     public async Task<bool> GoalExists(int id) {
         return await context.Goals.AnyAsync(a => a.Id == id);
     }
+    
+    public async Task UpdateDatesAsync(int? id) {
+        if (!id.HasValue) return;
+
+        var goal = await context.Goals.FindAsync(id.Value);
+        if (goal == null) return;
+        
+        var relatedSteps = await context.Steps
+            .Where(s => s.GoalId == id && !s.IsDeleted)
+            .ToListAsync();
+
+        if (relatedSteps.Count != 0) {
+            goal.StartDate = relatedSteps.Min(s => s.CompletedOn);
+            goal.EndDate = relatedSteps.Max(s => s.CompletedOn);
+        } else {
+            goal.StartDate = null;
+            goal.EndDate = null;
+        }
+
+        await context.SaveChangesAsync();
+    }
 }
