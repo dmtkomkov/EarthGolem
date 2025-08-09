@@ -81,6 +81,7 @@ public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> 
             return NotFound();
         }
 
+        Console.WriteLine(stepModel.User?.UserName);
         return Ok(stepModel.ToDto());
     }
 

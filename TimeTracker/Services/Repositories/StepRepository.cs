@@ -125,7 +125,13 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
     }
 
     public async Task<Step?> ToggleAsync(int id) {
-        var stepModel = await context.Steps.FindAsync(id);
+        var stepModel = await context.Steps
+            .Include(s => s.User)
+            .Include(s => s.Category)
+                .ThenInclude(c => c.Area)
+            .Include(s => s.Goal)
+                .ThenInclude(g => g.Project)
+            .FirstOrDefaultAsync(s => s.Id == id);
 
         if (stepModel == null) {
             return null;
