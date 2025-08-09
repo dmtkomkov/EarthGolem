@@ -30,6 +30,17 @@ public class ProjectController(IProjectRepository projectRepo) : ControllerBase 
         return Ok(projectModels.ToDto());
     }
 
+    [HttpGet("{name}")]
+    public async Task<IActionResult> Name([FromRoute] string name) {
+        var projectModels = await projectRepo.GetByNameAsync(name);
+
+        if (projectModels == null) {
+            return NotFound();
+        }
+
+        return Ok(projectModels.ToDto());
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateProjectDto projectDto) {
         var projectModel = await projectRepo.CreateAsync(projectDto);

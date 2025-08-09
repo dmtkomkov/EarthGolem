@@ -21,6 +21,12 @@ public class ProjectRepository(ApplicationDbContext context) : IProjectRepositor
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
+    public async Task<Project?> GetByNameAsync(string name) {
+        return await context.Projects
+            .Include(p => p.Goals)
+            .FirstOrDefaultAsync(s => s.Name == name);
+    }
+
     public async Task<Project> CreateAsync(CreateProjectDto projectDto) {
         var projectModel = projectDto.ToModel();
         await context.Projects.AddAsync(projectModel);

@@ -6,6 +6,7 @@ namespace TimeTracker.Interfaces;
 public interface IProjectRepository {
     Task<List<Project>> GetAllAsync();
     Task<Project?> GetByIdAsync(int id);
+    Task<Project?> GetByNameAsync(string name);
     Task<Project> CreateAsync(CreateProjectDto projectDto);
     Task<Project?> UpdateAsync(int id, UpdateProjectDto projectDto);
     Task<Project?> ToggleAsync(int id);
