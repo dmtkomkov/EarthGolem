@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Dtos.Step;
+using TimeTracker.Enums;
 using TimeTracker.Interfaces;
 using TimeTracker.Mappers;
 using TimeTracker.Models;
@@ -8,7 +9,7 @@ using TimeTracker.Models;
 namespace TimeTracker.Services.Repositories;
 
 public class StepRepository(ApplicationDbContext context, IGoalRepository goalRepository) : IStepRepository {
-    public async Task<List<Step>> GetAllAsync(DateOnly? dateFilter) {
+    public async Task<List<Step>> GetAllAsync(DateOnly? dateFilter, string stepFilter) {
         IQueryable<Step> query = context.Steps
             .AsNoTracking()
             .Include(s => s.User)
@@ -21,12 +22,18 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
             query = query.Where(s => s.CompletedOn == dateFilter.Value);
         }
 
+        query = stepFilter switch {
+            StepParam.Active => query.Where(s => !s.IsDeleted),
+            StepParam.Deleted => query.Where(s => s.IsDeleted),
+            _ => query
+        };
+
         return await query
             .OrderByDescending(s => s.Id)
             .ToListAsync();
     }
 
-    public async Task<List<StepGroup>> GetAllGroupedByDateAsync() {
+    public async Task<List<StepGroup>> GetAllGroupedByDateAsync(string stepFilter) {
         var distinctDates = await context.Steps
             .AsNoTracking()
             .Select(s => s.CompletedOn)
@@ -37,13 +44,21 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
         if (distinctDates.Count == 0)
             return [];
 
-        return await context.Steps
+        IQueryable<Step> query = context.Steps
             .AsNoTracking()
             .Include(s => s.User)
             .Include(s => s.Category)
             .ThenInclude(c => c.Area)
             .Include(s => s.Goal)
-            .ThenInclude(g => g.Project)
+            .ThenInclude(g => g.Project);
+        
+        query = stepFilter switch {
+            StepParam.Active => query.Where(s => !s.IsDeleted),
+            StepParam.Deleted => query.Where(s => s.IsDeleted),
+            _ => query
+        };
+        
+        return await query
             .Where(s => distinctDates.Contains(s.CompletedOn))
             .GroupBy(s => s.CompletedOn)
             .Select(g => new StepGroup {

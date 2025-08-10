@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.Dtos.Step;
+using TimeTracker.Enums;
 using TimeTracker.Interfaces;
 using TimeTracker.Mappers;
 
@@ -12,8 +13,8 @@ namespace TimeTracker.Controllers;
 [Authorize]
 public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> userManager) : ControllerBase {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] DateOnly? date) {
-        var steps = await stepRepo.GetAllAsync(date);
+    public async Task<IActionResult> GetAll([FromQuery] DateOnly? date, [FromQuery] string showSteps = StepParam.All) {
+        var steps = await stepRepo.GetAllAsync(date, showSteps);
 
         var stepDtos = steps.Select(s => s.ToDto());
 
@@ -21,8 +22,8 @@ public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> 
     }
 
     [HttpGet("group")]
-    public async Task<IActionResult> GetAllGroupedByDate() {
-        var stepGroups = await stepRepo.GetAllGroupedByDateAsync();
+    public async Task<IActionResult> GetAllGroupedByDate([FromQuery] string showSteps = StepParam.All) {
+        var stepGroups = await stepRepo.GetAllGroupedByDateAsync(showSteps);
 
         var stepGroupDtos = stepGroups.Select(sg => sg.ToGroupDto());
 
