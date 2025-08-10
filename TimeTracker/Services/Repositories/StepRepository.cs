@@ -51,13 +51,13 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
             .ThenInclude(c => c.Area)
             .Include(s => s.Goal)
             .ThenInclude(g => g.Project);
-        
+
         query = stepFilter switch {
             StepParam.Active => query.Where(s => !s.IsDeleted),
             StepParam.Deleted => query.Where(s => s.IsDeleted),
             _ => query
         };
-        
+
         return await query
             .Where(s => distinctDates.Contains(s.CompletedOn))
             .GroupBy(s => s.CompletedOn)
@@ -143,9 +143,9 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
         var stepModel = await context.Steps
             .Include(s => s.User)
             .Include(s => s.Category)
-                .ThenInclude(c => c.Area)
+            .ThenInclude(c => c.Area)
             .Include(s => s.Goal)
-                .ThenInclude(g => g.Project)
+            .ThenInclude(g => g.Project)
             .FirstOrDefaultAsync(s => s.Id == id);
 
         if (stepModel == null) {
