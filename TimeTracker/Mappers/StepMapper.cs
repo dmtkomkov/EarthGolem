@@ -4,7 +4,7 @@ using TimeTracker.Models;
 namespace TimeTracker.Mappers;
 
 public static class StepMapper {
-    public static StepGroupDto ToGroupDto(this StepGroup stepGroup) {
+    public static StepGroupDto ToDto(this StepGroup stepGroup) {
         return new StepGroupDto() {
             CompletedOn = stepGroup.CompletedOn,
             Steps = stepGroup.Steps.Select(s => s.ToDto()).ToList(),
@@ -44,5 +44,17 @@ public static class StepMapper {
         stepModel.CategoryId = stepDto.CategoryId;
         stepModel.GoalId = stepDto.GoalId;
         stepModel.UpdatedOn = DateOnly.FromDateTime(DateTime.Today);
+    }
+
+    public static PagedStepGroupDto ToDto(this PagedList<StepGroup> pagedList) {
+        return new PagedStepGroupDto() {
+            Items = pagedList.Items.Select(sg => sg.ToDto()).ToList(),
+            Page = pagedList.Page,
+            PageSize = pagedList.PageSize,
+            TotalCount = pagedList.TotalCount,
+            TotalPages = pagedList.TotalPages,
+            HasNextPage = pagedList.HasNextPage,
+            HasPreviousPage = pagedList.HasPreviousPage,
+        };
     }
 }

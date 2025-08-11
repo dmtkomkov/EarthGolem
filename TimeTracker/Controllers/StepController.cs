@@ -13,7 +13,7 @@ namespace TimeTracker.Controllers;
 [Authorize]
 public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> userManager) : ControllerBase {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] DateOnly? date, [FromQuery] string showSteps = StepParam.All) {
+    public async Task<IActionResult> GetAll([FromQuery] DateOnly? date, [FromQuery] string showSteps) {
         var steps = await stepRepo.GetAllAsync(date, showSteps);
 
         var stepDtos = steps.Select(s => s.ToDto());
@@ -22,13 +22,10 @@ public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> 
     }
 
     [HttpGet("group")]
-    public async Task<IActionResult> GetAllGroupedByDate([FromQuery] string showSteps = StepParam.All) {
-        var stepGroups = await stepRepo.GetAllGroupedByDateAsync(showSteps, 2, 2);
+    public async Task<IActionResult> GetAllGroupedByDate([FromQuery] string showSteps, int pageNumber, int pageSize) {
+        var pagedStepGroup = await stepRepo.GetAllGroupedByDateAsync(showSteps, pageNumber, pageSize);
 
-        // var stepGroupDtos = stepGroups.Select(sg => sg.ToGroupDto());
-
-        // return Ok(stepGroupDtos);
-        return Ok(stepGroups);
+        return Ok(pagedStepGroup.ToDto());
     }
 
     [HttpGet("{id:int}")]
