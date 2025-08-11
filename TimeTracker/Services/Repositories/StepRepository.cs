@@ -33,7 +33,7 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
             .ToListAsync();
     }
 
-    public async Task<List<StepGroup>> GetAllGroupedByDateAsync(string stepFilter) {
+    public async Task<PagedList<StepGroup>> GetAllGroupedByDateAsync(string stepFilter, int pageNumber, int pageSize) {
         var distinctDates = await context.Steps
             .AsNoTracking()
             .Select(s => s.CompletedOn)
@@ -41,10 +41,7 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
             .OrderByDescending(d => d)
             .ToListAsync();
 
-        if (distinctDates.Count == 0)
-            return [];
-
-        IQueryable<Step> query = context.Steps
+        IQueryable<Step> stepQuery = context.Steps
             .AsNoTracking()
             .Include(s => s.User)
             .Include(s => s.Category)
@@ -52,21 +49,22 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
             .Include(s => s.Goal)
             .ThenInclude(g => g.Project);
 
-        query = stepFilter switch {
-            StepParam.Active => query.Where(s => !s.IsDeleted),
-            StepParam.Deleted => query.Where(s => s.IsDeleted),
-            _ => query
+        stepQuery = stepFilter switch {
+            StepParam.Active => stepQuery.Where(s => !s.IsDeleted),
+            StepParam.Deleted => stepQuery.Where(s => s.IsDeleted),
+            _ => stepQuery
         };
 
-        return await query
+        IQueryable<StepGroup> groupQuery = stepQuery
             .Where(s => distinctDates.Contains(s.CompletedOn))
             .GroupBy(s => s.CompletedOn)
             .Select(g => new StepGroup {
                 CompletedOn = g.Key,
                 Steps = g.OrderByDescending(s => s.Id).ToList()
             })
-            .OrderByDescending(g => g.CompletedOn)
-            .ToListAsync();
+            .OrderByDescending(g => g.CompletedOn);
+
+        return await PagedList<StepGroup>.CreateAsync(groupQuery, pageNumber, pageSize);
     }
 
 

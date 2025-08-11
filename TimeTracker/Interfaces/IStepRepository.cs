@@ -6,7 +6,7 @@ namespace TimeTracker.Interfaces;
 
 public interface IStepRepository {
     Task<List<Step>> GetAllAsync(DateOnly? dateFilter, string stepFilter);
-    Task<List<StepGroup>> GetAllGroupedByDateAsync(string stepFilter);
+    Task<PagedList<StepGroup>> GetAllGroupedByDateAsync(string stepFilter, int pageNumber, int pageSize);
     Task<Step?> GetByIdAsync(int id);
     Task<Step?> CreateAsync(CreateStepDto stepDto);
     Task<Step?> UpdateAsync(int id, UpdateStepDto stepDto);

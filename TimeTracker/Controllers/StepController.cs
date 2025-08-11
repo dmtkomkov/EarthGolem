@@ -23,11 +23,12 @@ public class StepController(IStepRepository stepRepo, UserManager<IdentityUser> 
 
     [HttpGet("group")]
     public async Task<IActionResult> GetAllGroupedByDate([FromQuery] string showSteps = StepParam.All) {
-        var stepGroups = await stepRepo.GetAllGroupedByDateAsync(showSteps);
+        var stepGroups = await stepRepo.GetAllGroupedByDateAsync(showSteps, 2, 2);
 
-        var stepGroupDtos = stepGroups.Select(sg => sg.ToGroupDto());
+        // var stepGroupDtos = stepGroups.Select(sg => sg.ToGroupDto());
 
-        return Ok(stepGroupDtos);
+        // return Ok(stepGroupDtos);
+        return Ok(stepGroups);
     }
 
     [HttpGet("{id:int}")]
