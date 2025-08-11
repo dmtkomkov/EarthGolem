@@ -2,14 +2,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TimeTracker.Models;
 
-public class PagedList<T>(List<T> items, int page, int pageSize, int totalCount) {
+public class PagedList<T>(List<T> items, int pageNumber, int pageSize, int totalCount) {
     public List<T> Items { get; } = items;
-    public int Page { get; } = page;
+    public int PageNumber { get; } = pageNumber;
     public int PageSize { get; } = pageSize;
     public int TotalCount { get; } = totalCount;
     public int TotalPages { get; } = (int)Math.Ceiling(totalCount / (double)pageSize);
-    public bool HasNextPage => Page * PageSize < TotalCount;
-    public bool HasPreviousPage => Page > 1;
+    public bool HasNextPage => PageNumber * PageSize < TotalCount;
+    public bool HasPreviousPage => PageNumber > 1;
 
     public static async Task<PagedList<T>> CreateAsync(IQueryable<T> query, int page, int pageSize) {
         var totalCount = await query.CountAsync();

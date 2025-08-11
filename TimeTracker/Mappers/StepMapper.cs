@@ -49,7 +49,7 @@ public static class StepMapper {
     public static PagedStepGroupDto ToDto(this PagedList<StepGroup> pagedList) {
         return new PagedStepGroupDto() {
             Items = pagedList.Items.Select(sg => sg.ToDto()).ToList(),
-            Page = pagedList.Page,
+            PageNumber = pagedList.PageNumber,
             PageSize = pagedList.PageSize,
             TotalCount = pagedList.TotalCount,
             TotalPages = pagedList.TotalPages,
