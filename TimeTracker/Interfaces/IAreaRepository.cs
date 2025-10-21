@@ -6,6 +6,7 @@ namespace TimeTracker.Interfaces;
 public interface IAreaRepository {
     Task<List<Area>> GetAllAsync();
     Task<Area?> GetByIdAsync(int id);
+    Task<Area?> GetByNameAsync(string name);
     Task<Area> CreateAsync(CreateAreaDto areaDto);
     Task<Area?> UpdateAsync(int id, UpdateAreaDto areaDto);
     Task<Area?> DeleteAsync(int id);

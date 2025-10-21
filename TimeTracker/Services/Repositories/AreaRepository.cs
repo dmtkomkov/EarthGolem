@@ -19,6 +19,12 @@ public class AreaRepository(ApplicationDbContext context) : IAreaRepository {
             .Include(a => a.Categories)
             .FirstOrDefaultAsync(s => s.Id == id);
     }
+    
+    public async Task<Area?> GetByNameAsync(string name) {
+        return await context.Areas
+            .Include(a => a.Categories)
+            .FirstOrDefaultAsync(s => s.Name == name);
+    }
 
     public async Task<Area> CreateAsync(CreateAreaDto areaDto) {
         var areaModel = areaDto.ToModel();
