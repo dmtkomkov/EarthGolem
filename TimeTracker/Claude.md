@@ -244,11 +244,14 @@ There are no roles. The model targets a small, trusted group of users, such as a
 |---|---|
 | List | `GET /api/<resource>` |
 | Read | `GET /api/<resource>/{id}` |
+| Read by name (where applicable) | `GET /api/<resource>/{name}` |
 | Create | `POST /api/<resource>` |
 | Update | `PUT /api/<resource>/{id}` |
 | Delete | `DELETE /api/<resource>/{id}` |
 | Toggle (where applicable) | `PUT /api/<resource>/toggle/{id}` |
 
+- Read by name shares the route with read by id: a numeric segment is treated as an id, and any other segment as a
+  name. Names are not unique, so a name lookup returns the first matching entity.
 - Representation shapes:
   - **Flat:** the entity's own fields and foreign-key ids; used for nested lists and create/update responses.
   - **Full:** the entity with its parent embedded as a flat object plus derived counters, or with its children as flat
@@ -265,7 +268,7 @@ There are no roles. The model targets a small, trusted group of users, such as a
 |---|---|---|
 | `auth` | `POST login`, `POST refresh` | Anonymous. Both return a token pair `{token, refreshToken}`. |
 | `user` | list, `GET me` | Read-only. Users are provisioned out of band (see §8.3). |
-| `area` | list, read, create, update, delete | Full representation embeds the area's categories. |
+| `area` | list, read by id, read by name, create, update, delete | Full representation embeds the area's categories. |
 | `category` | list (optional filter by area name), `GET group`, read, create, update, delete | The group view returns areas with their categories. Create accepts an embedded new area. |
 | `project` | list, read by id, read by name, create, update, toggle, delete | Full representation embeds the project's goals. |
 | `goal` | list (optional filter by project name or `null` for goals without a project), `GET group`, read, create, update, toggle, delete | The group view returns projects with their goals, plus a group for goals without a project. Create accepts an embedded new project. |
@@ -277,8 +280,9 @@ There are no roles. The model targets a small, trusted group of users, such as a
 - `GET /api/step/group?showSteps=…&pageNumber=…&pageSize=…` groups steps **by completion date**, newest day first.
   Paging applies to **days, not steps**: a page contains `pageSize` distinct days, each with all of its matching
   steps.
-- Within a day, steps are ordered newest first. Lists of categories, goals and steps are ordered by descending id
-  (most recently created first).
+- Steps follow natural recording order: in the flat list and within each day, they are ordered by ascending id
+  (earliest recorded first). Days in the grouped view are ordered newest first.
+- Lists of categories and goals are ordered by descending id (most recently created first).
 
 ---
 

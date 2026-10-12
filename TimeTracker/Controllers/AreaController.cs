@@ -29,6 +29,17 @@ public class AreaController(IAreaRepository areaRepo) : ControllerBase {
 
         return Ok(areaModel.ToDto());
     }
+    
+    [HttpGet("{name}")]
+    public async Task<IActionResult> GetByName([FromRoute] string name) {
+        var areaModel = await areaRepo.GetByNameAsync(name);
+
+        if (areaModel == null) {
+            return NotFound();
+        }
+
+        return Ok(areaModel.ToDto());
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateAreaDto areaDto) {

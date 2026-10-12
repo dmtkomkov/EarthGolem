@@ -29,7 +29,7 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
         };
 
         return await query
-            .OrderByDescending(s => s.Id)
+            .OrderBy(s => s.Id)
             .ToListAsync();
     }
 
@@ -60,7 +60,7 @@ public class StepRepository(ApplicationDbContext context, IGoalRepository goalRe
             .GroupBy(s => s.CompletedOn)
             .Select(g => new StepGroup {
                 CompletedOn = g.Key,
-                Steps = g.OrderByDescending(s => s.Id).ToList()
+                Steps = g.OrderBy(s => s.Id).ToList()
             })
             .OrderByDescending(g => g.CompletedOn);
 
