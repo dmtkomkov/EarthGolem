@@ -86,6 +86,9 @@ builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IGoalRepository, GoalRepository>();
+builder.Services.AddScoped<IPaymentCategoryRepository, PaymentCategoryRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Configuration.AddEnvironmentVariables();
@@ -96,6 +99,11 @@ var app = builder.Build();
 
 if (args.Length > 0 && args[0] == "create-user") {
     await UserCreator.CreateUserAsync(app.Services, args);
+    return;
+}
+
+if (args.Length > 0 && args[0] == "seed-payment-categories") {
+    await PaymentCategorySeeder.SeedAsync(app.Services, args);
     return;
 }
 

@@ -295,6 +295,103 @@ namespace TimeTracker.Data.Migrations
                     b.ToTable("Goals");
                 });
 
+            modelBuilder.Entity("TimeTracker.Models.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("SpentOn")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("SpentOn");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("TimeTracker.Models.PaymentCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(4)
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Label")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("PaymentCategories");
+                });
+
+            modelBuilder.Entity("TimeTracker.Models.Post", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Posts");
+                });
+
             modelBuilder.Entity("TimeTracker.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -445,6 +542,28 @@ namespace TimeTracker.Data.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("TimeTracker.Models.Payment", b =>
+                {
+                    b.HasOne("TimeTracker.Models.PaymentCategory", "Category")
+                        .WithMany("Payments")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("TimeTracker.Models.Post", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("TimeTracker.Models.Step", b =>
                 {
                     b.HasOne("TimeTracker.Models.Category", "Category")
@@ -483,6 +602,11 @@ namespace TimeTracker.Data.Migrations
             modelBuilder.Entity("TimeTracker.Models.Goal", b =>
                 {
                     b.Navigation("Steps");
+                });
+
+            modelBuilder.Entity("TimeTracker.Models.PaymentCategory", b =>
+                {
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("TimeTracker.Models.Project", b =>

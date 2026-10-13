@@ -1,0 +1,16 @@
+[
+  { "id": 1, "name": "Food", "label": "FD", "description": "Все съедобное" },
+  { "id": 2, "name": "Sweets", "label": "SW", "description": "Все вредное и вкусное" },
+  { "id": 11, "name": "Health", "label": "HL", "description": "Траты на лекарства и лечение" },
+  { "id": 13, "name": "Supplies", "label": "SP", "description": "Товары для дома и расходные материалы" },
+  { "id": 21, "name": "Vacation", "label": "VC", "description": "Поездки, развлечения, рестораны" },
+  { "id": 22, "name": "Hobby", "label": "HB", "description": "Спорт, книги, игры" },
+  { "id": 23, "name": "Business", "label": "BS", "description": "Обучение и развитие бизнеса" },
+  { "id": 31, "name": "House", "label": "HS", "description": "Аренда и комунальные траты, ипотека" },
+  { "id": 32, "name": "School", "label": "SC", "description": "Детсад и няня" },
+  { "id": 33, "name": "Car", "label": "CA", "description": "Обслуживание машины и аренда гаража" },
+  { "id": 35, "name": "Paychecks", "label": "PC", "description": "Регулярные платы за услуги и сервисы" },
+  { "id": 41, "name": "Appliances", "label": "AP", "description": "Крупная техника" },
+  { "id": 42, "name": "Clothes", "label": "CL", "description": "Детская и взрослая одежда" },
+  { "id": 45, "name": "Zoo", "label": "ZO", "description": "Зверюшки и их игрушки" }
+]

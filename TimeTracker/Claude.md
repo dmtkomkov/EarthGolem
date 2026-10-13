@@ -17,6 +17,12 @@ duration, completed on a specific day. Every step is classified along two indepe
 The service stores this data, derives timeline information for goals and projects, and serves it to a single-page
 web client.
 
+The service also hosts two household features migrated from FireGolem:
+
+- **Money:** daily expenses (**payments**) recorded per **payment category** and currency, with day lists, monthly
+  reports and a dashboard summary.
+- **Blog:** short text **posts** written by users.
+
 ---
 
 ## 2. System Context
@@ -72,9 +78,9 @@ flowchart TD
 - **Controllers** handle routing, model binding and validation through DTO data annotations and
   `[ApiController]` semantics. They call a repository and map the result to a response DTO.
   They contain no business logic.
-- **Repositories** form the application core. Each aggregate root (Area, Category, Project, Goal, Step) has its own
-  repository behind an interface. Repositories both query data and enforce business rules: transactions, derived
-  values, cascading clean-up. There is no separate service layer.
+- **Repositories** form the application core. Each aggregate root (Area, Category, Project, Goal, Step,
+  PaymentCategory, Payment, Post) has its own repository behind an interface. Repositories both query data and
+  enforce business rules: transactions, derived values, cascading clean-up. There is no separate service layer.
 - **DTOs** define the public contract and are never the persistence entities themselves.
 - **Mappers** are hand-written extension methods that convert entities to DTOs and DTOs to entities. No mapping
   library is used.
@@ -99,6 +105,8 @@ flowchart TD
   - **200** with the updated representation for update and toggle;
   - **204** for delete.
 - Invalid input detected by model validation returns **400** through automatic `[ApiController]` behavior.
+- A request that conflicts with existing data returns **409** with a message: a duplicate payment-category name or
+  label, or deleting a payment category that still has payments.
 
 ### 4.4 Request Pipeline
 
@@ -124,6 +132,18 @@ erDiagram
     STEP { int Id; int Duration; date CompletedOn; date UpdatedOn; bool IsDeleted; string Description; string UserId; int CategoryId; int GoalId }
 ```
 
+Money and Blog entities are independent of the time-tracking model:
+
+```mermaid
+erDiagram
+    PAYMENT_CATEGORY ||--o{ PAYMENT : classifies
+    USER ||--o{ POST : writes
+
+    PAYMENT_CATEGORY { int Id; string Name; string Label; string Description }
+    PAYMENT { int Id; int Amount; date SpentOn; string Currency; int CategoryId }
+    POST { int Id; string Title; string Body; datetime CreatedOn; bool IsDeleted; string UserId }
+```
+
 ### 5.1 Entities
 
 | Entity | Role | Key attributes |
@@ -133,7 +153,10 @@ erDiagram
 | **Project** | Optional container for goals with an open/closed lifecycle. It owns the color shown for its goals. | name, color, description, status, derived start/end dates |
 | **Goal** | Outcome that steps contribute to. A goal may exist without a project. | name, description, status, derived start/end dates, project (optional) |
 | **Step** | Atomic time entry made by a user on a given day. | duration, completion date, last-update date, deleted flag, description, user, category (required), goal (optional) |
-| **User** | Identity user that authenticates and authors steps. | user name, password hash |
+| **User** | Identity user that authenticates and authors steps and posts. | user name, password hash |
+| **PaymentCategory** | Expense category. Named `PaymentCategory` to avoid a clash with step categories. | name, short label, description |
+| **Payment** | One household expense. | amount, spending date, currency, payment category (required) |
+| **Post** | Blog entry. | title, body, creation timestamp, deleted flag, author (required) |
 
 ### 5.2 Value Semantics
 
@@ -148,7 +171,16 @@ erDiagram
 - **Names** are short labels (up to 36 characters). **Descriptions** are free text up to 500 characters.
   Length limits are enforced at the API boundary.
 - **Derived counters:** categories and goals expose `stepCount`, the number of their **non-deleted** steps.
-  It is computed and not stored.
+  It is computed and not stored. Payment categories expose `paymentCount`, computed the same way.
+- **Amount** (payment) is a positive integer in **whole currency units**. Fractional amounts are not modeled.
+- **Currency** is an enum (`PLN`, `EUR`) stored and serialized as its 3-letter code string, unlike the numeric
+  status enums. Adding a currency means adding an enum member.
+- **Currency totals** are lists of `{currency, amount}` that always contain every currency in enum order, with zero
+  for currencies without payments.
+- **Post timestamps:** `CreatedOn` is a UTC date-time set by the server and serialized with a `Z` suffix.
+- **Payment-category names** (up to 36 characters) and **labels** (up to 4 characters, optional) are unique,
+  case-insensitively (SQLite `NOCASE`, ASCII only). An empty label is stored as `null`.
+- **Post titles** are up to 255 characters. **Post bodies** are unbounded plain text; line breaks are preserved.
 
 ### 5.3 Referential Rules
 
@@ -159,6 +191,8 @@ erDiagram
 | Step → User | required | Steps are deleted with the user (cascade). |
 | Goal → Project | optional | Blocked while goals reference the project (no action). |
 | Step → Goal | optional | Blocked while steps reference the goal (no action). |
+| Payment → PaymentCategory | required | Blocked while payments reference the category (restrict). |
+| Post → User | required | Posts are deleted with the user (cascade). |
 
 The database enforces these rules through foreign-key constraints.
 
@@ -205,13 +239,13 @@ To support the client's single-form workflow:
 
 Both operations are atomic.
 
-### 6.4 Soft Deletion of Steps
+### 6.4 Soft Deletion of Steps and Posts
 
-- Steps support **soft deletion**. A toggle operation flips the deleted flag, stamps `UpdatedOn` and recalculates
-  goal and project dates. Deleted steps can be restored the same way.
-- Deleted steps are excluded from step counters and derived dates. Step listings can show active, deleted or all
-  steps.
-- Steps can also be removed permanently. All other entities are removed only permanently.
+- Steps and posts support **soft deletion**. A toggle operation flips the deleted flag; for steps, it also stamps
+  `UpdatedOn` and recalculates goal and project dates. Deleted items can be restored the same way.
+- Deleted steps are excluded from step counters and derived dates. Step and post listings can show active, deleted
+  or all items.
+- Steps and posts can also be removed permanently. All other entities are removed only permanently.
 
 ### 6.5 Lifecycle Status
 
@@ -221,13 +255,27 @@ statuses are not linked.
 
 ### 6.6 Data Ownership Model
 
-All domain data is **shared by all authenticated users**. Areas, categories, projects and goals have no owner, and
-every user sees every step. A step records its author:
+All domain data is **shared by all authenticated users**. Areas, categories, projects, goals, payment categories and
+payments have no owner, and every user sees every step and post. A step records its author:
 
 - By default, the author is the authenticated user.
 - The client may set the author explicitly.
 
+A post records its author too, but the author is always the authenticated user who creates the post; it is never
+accepted from the client and never changes. Any authenticated user may edit, toggle or delete any post.
+
 There are no roles. The model targets a small, trusted group of users, such as a household.
+
+### 6.7 Money
+
+- **Currencies are never converted.** Every total (day, month, category, summary) is kept per currency.
+- A payment references its category by id. An unknown category id is invalid input (**400**).
+- A payment category that still has payments cannot be deleted (**409**); reassign or delete its payments first.
+- The monthly report lists **every** payment category, with zeros where nothing was spent, in ascending id order —
+  the same order as the payment-category list, so clients can render a matrix with category labels as column
+  headers.
+- The summary returns the totals of a given day and of that day's whole calendar month. The day defaults to the
+  server's current local date.
 
 ---
 
@@ -235,7 +283,8 @@ There are no roles. The model targets a small, trusted group of users, such as a
 
 ### 7.1 Conventions
 
-- Base path `/api/<resource>`. Resources: `auth`, `user`, `area`, `category`, `project`, `goal`, `step`.
+- Base path `/api/<resource>`. Resources: `auth`, `user`, `area`, `category`, `project`, `goal`, `step`,
+  `payment-category`, `payment`, `post`.
 - Every resource except `auth` requires a bearer token.
 - JSON property names use camelCase.
 - Standard operations per resource:
@@ -273,6 +322,9 @@ There are no roles. The model targets a small, trusted group of users, such as a
 | `project` | list, read by id, read by name, create, update, toggle, delete | Full representation embeds the project's goals. |
 | `goal` | list (optional filter by project name or `null` for goals without a project), `GET group`, read, create, update, toggle, delete | The group view returns projects with their goals, plus a group for goals without a project. Create accepts an embedded new project. |
 | `step` | list, `GET group`, read, create, update, toggle, delete | Full representation embeds the user, the category with its area, and the goal with its project. |
+| `payment-category` | list, read, create, update, delete | Ordered by ascending id. Full representation adds `paymentCount`. Create and update return the flat representation. |
+| `payment` | list (optional filter by `date`), `GET group`, `GET report`, `GET summary`, read, create, update, delete | Full representation embeds the payment category as a flat object. |
+| `post` | list (paged, filter `showPosts`), read, create, update, toggle, delete | Full representation embeds the author. Newest first. |
 
 ### 7.3 Step Listing and Day-Based Paging
 
@@ -283,6 +335,19 @@ There are no roles. The model targets a small, trusted group of users, such as a
 - Steps follow natural recording order: in the flat list and within each day, they are ordered by ascending id
   (earliest recorded first). Days in the grouped view are ordered newest first.
 - Lists of categories and goals are ordered by descending id (most recently created first).
+
+### 7.4 Money and Blog Listings
+
+- `GET /api/payment?date={yyyy-MM-dd}` returns a flat list in ascending id order. `date` is optional.
+- `GET /api/payment/group?pageNumber=…&pageSize=…` groups payments **by spending date**, newest day first. Paging
+  applies to **days**. Each day carries its per-currency totals and its payments in ascending id order.
+- `GET /api/payment/report?pageNumber=…&pageSize=…` returns **months** that have payments, newest first. Each month
+  carries `year`, `month`, per-currency totals and per-category totals for every category.
+- `GET /api/payment/summary?date={yyyy-MM-dd}` returns `date`, `day` totals and `month` totals.
+- `GET /api/post?showPosts={active|deleted|all}&pageNumber=…&pageSize=…` pages posts ordered by creation time and
+  then id, newest first. `showPosts` defaults to `active`.
+- In these endpoints `pageNumber` defaults to 1 and `pageSize` to 20 (allowed range 1–100); out-of-range values
+  return **400**. A page beyond the end returns an empty `items` list.
 
 ---
 
@@ -321,6 +386,17 @@ create-user --username <name> --password <password> [--email <email>]
 
 The command creates the user if it does not exist and exits without starting the web server. Passwords follow the
 default ASP.NET Core Identity password policy.
+
+Payment categories have a fixture, `Data/Fixtures/payment-categories.json` (the FireGolem categories with their ids,
+which define the report column order). It is loaded by another command-line mode:
+
+```
+seed-payment-categories [--file <path>]
+```
+
+The command validates the file (field lengths, duplicates), requires an up-to-date database schema, adds the
+categories with their ids and skips categories whose id, name or label already exists, so it can be run again. It
+exits without starting the web server. Relative paths resolve against the working directory.
 
 ### 8.4 Cross-Origin Access
 
@@ -419,6 +495,9 @@ Mapping uses extension methods named `ToDto`, `ToFlatDto`, `ToGroupDto`, `ToMode
   derived-date recalculation (§6.1) in the same transaction.
 - Derived counters count only non-deleted steps.
 - Clients never set derived or server-managed fields.
+- Currency totals are never mixed or converted; build them with the shared totals helper so that every currency is
+  always present.
+- Payment categories that have payments cannot be deleted.
 
 ### 12.6 Contract Changes
 

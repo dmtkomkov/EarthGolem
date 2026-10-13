@@ -98,6 +98,10 @@ _dotnet ef database update_
 
 _dotnet run create-user --username admin --password some#password_
 
+### Load payment categories
+
+_dotnet run seed-payment-categories_
+
 ### Build and publish project
 
 _dotnet build -c Release -o ./publish_
